@@ -12,7 +12,7 @@ namespace lex {
         property_name         , // #![ \t\r\n[]{}<>()]+
         generator_call         , // @![ \t\r\n[]{}<>()]+
 
-        EOF,    //unable to read more
+        EndOfFile,    //unable to read more
         scope_square_brackets_begin , // [
         scope_square_brackets_end   , // ]
         scope_curly_brackets_begin  , // {
@@ -38,17 +38,14 @@ namespace lex {
         //----operators--------------------------------------------------------- 
     };
 
-
-    
-
-
-    
-
     struct token {
         std::string str;
         enum token_type type;
     };
 
-    struct token lexer(const std::string& s, unsigned index);
+    class lexer{
+    public:
+        struct token lex(const std::string& s, unsigned &index);
+    };
 }
 #endif /* LEX_HPP */

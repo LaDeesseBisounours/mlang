@@ -17,9 +17,11 @@ include_directories(src/)
 
 add_subdirectory(test/)
 
-add_executable(mc "")
-target_compile_options(mc PRIVATE  -Wall -Wextra -Werror -g)
 
+
+add_executable(mc "")
+
+target_compile_options(mc PRIVATE  -Wall -Wextra -Werror -g)
 
 target_sources(mc PUBLIC src/main.cpp)
 
