@@ -47,7 +47,7 @@
 
     namespace ParserLayer {
         class Scanner;
-        class Interpreter;
+        class ParserHandler;
     }
 }
 
@@ -65,7 +65,7 @@
     #include "location.hh"
     
     // yylex() arguments are defined in parser.y
-    static ParserLayer::Parser::symbol_type yylex(ParserLayer::Scanner &scanner, ParserLayer::Interpreter &driver) {
+    static ParserLayer::Parser::symbol_type yylex(ParserLayer::Scanner &scanner, ParserLayer::ParserHandler &driver) {
         return scanner.get_next_token();
     }
     
@@ -77,9 +77,9 @@
 }
 
 %lex-param { ParserLayer::Scanner &scanner }
-%lex-param { ParserLayer::Interpreter &driver }
+%lex-param { ParserLayer::ParserHandler &driver }
 %parse-param { ParserLayer::Scanner &scanner }
-%parse-param { ParserLayer::Interpreter &driver }
+%parse-param { ParserLayer::ParserHandler &driver }
 %locations
 %define parse.trace
 %define parse.error verbose

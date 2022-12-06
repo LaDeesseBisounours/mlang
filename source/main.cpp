@@ -35,7 +35,7 @@ using namespace ParserLayer;
 using namespace std;
 
 int main(int argc, char **argv) {
-    Interpreter i;
+    ParserHandler i;
     int res = i.parse();
     cout << "Parse complete. Result = " << res << endl;
     return res;

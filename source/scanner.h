@@ -54,16 +54,16 @@
 namespace ParserLayer {
 
 // Forward declare interpreter to avoid include. Header is added inimplementation file.
-class Interpreter; 
+class ParserHandler; 
     
 class Scanner : public yyFlexLexer {
 public:
-        Scanner(Interpreter &driver) : m_driver(driver) {}
+        Scanner(ParserHandler &driver) : m_driver(driver) {}
 	virtual ~Scanner() {}
 	virtual ParserLayer::Parser::symbol_type get_next_token();
         
 private:
-    Interpreter &m_driver;
+    ParserHandler &m_driver;
 };
 
 }

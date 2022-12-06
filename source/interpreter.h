@@ -53,10 +53,10 @@ class Command;
  * I know that the AST is a bit too strong word for a simple
  * vector with nodes, but this is only an example. Get off me.
  */
-class Interpreter
+class ParserHandler
 {
 public:
-    Interpreter();
+    ParserHandler();
     
     /**
      * Run parser. Results are stored inside.
