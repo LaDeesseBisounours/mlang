@@ -4,9 +4,9 @@ project(testparser VERSION 1.0 )
 find_package(FLEX 2.6 REQUIRED)
 find_package(BISON 3.0 REQUIRED)
 find_package(Boost COMPONENTS system filesystem unit_test_framework REQUIRED)
-include_directories("./")
+include_directories("src")
 
-set(SRC_DIR ".")
+set(SRC_DIR "src")
 set(PARSER_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
 set(LEXER_OUT "${PARSER_DIR}/scanner.cpp")
