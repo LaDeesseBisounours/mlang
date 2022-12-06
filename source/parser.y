@@ -61,7 +61,7 @@
     #include <iostream>
     #include "scanner.h"
     #include "parser.hpp"
-    #include "interpreter.h"
+    #include "parser_handler.h"
     #include "location.hh"
     
     // yylex() arguments are defined in parser.y
