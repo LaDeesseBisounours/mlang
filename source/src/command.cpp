@@ -35,29 +35,29 @@ using namespace ParserLayer;
 using std::cout;
 using std::endl;
 
-Command::Command(const std::string &name, const std::vector<uint64_t> arguments) :
+AST_Node::AST_Node(const std::string &name, const std::vector<uint64_t> arguments) :
     m_name(name),
     m_args(arguments)
 {
 }
 
-Command::Command(const std::string &name) :
+AST_Node::AST_Node(const std::string &name) :
     m_name(name),
     m_args()
 {
 }
 
-Command::Command() :
+AST_Node::AST_Node() :
     m_name(),
     m_args()
 {
 }
 
-Command::~Command()
+AST_Node::~AST_Node()
 {
 }
     
-std::string Command::str() const {
+std::string AST_Node::str() const {
     std::stringstream ts;
     ts << "name = [" << m_name << "], ";
     ts << "arguments = [";
@@ -73,6 +73,6 @@ std::string Command::str() const {
     return ts.str();
 }
 
-std::string Command::name() const {
+std::string AST_Node::name() const {
     return m_name;
 }

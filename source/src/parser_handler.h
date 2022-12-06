@@ -41,7 +41,7 @@ namespace ParserLayer {
 
 // forward declare our simplistic AST node class so we
 // can declare container for it without the header
-class Command;
+class AST_Node;
 
 /**
  * This class is the interface for our scanner/lexer. The end user
@@ -89,7 +89,7 @@ public:
     
 private:
     // Used internally by Parser to insert AST nodes.
-    void addCommand(const Command &cmd);
+    void addAST_Node(const AST_Node &cmd);
     
     // Used internally by Scanner YY_USER_ACTION to update location indicator
     void increaseLocation(unsigned int loc);
@@ -100,7 +100,7 @@ private:
 private:
     Scanner m_scanner;
     Parser m_parser;
-    std::vector<Command> m_commands;  // Example AST
+    std::vector<AST_Node> m_commands;  // Example AST
     unsigned int m_location;          // Used by scanner
 };
 

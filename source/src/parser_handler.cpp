@@ -66,7 +66,7 @@ void ParserHandler::switchInputStream(std::istream *is) {
     m_commands.clear();    
 }
 
-void ParserHandler::addCommand(const Command &cmd)
+void ParserHandler::addAST_Node(const AST_Node &cmd)
 {
     m_commands.push_back(cmd);
 }

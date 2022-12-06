@@ -39,13 +39,13 @@ namespace ParserLayer {
  * AST node. If you can call it AST at all...
  * It keeps function name and a list of arguments.
  */
-class Command
+class AST_Node
 {
 public:
-    Command(const std::string &name, const std::vector<uint64_t> arguments);
-    Command(const std::string &name);
-    Command();
-    ~Command();
+    AST_Node(const std::string &name, const std::vector<uint64_t> arguments);
+    AST_Node(const std::string &name);
+    AST_Node();
+    ~AST_Node();
     
     std::string str() const;
     std::string name() const;

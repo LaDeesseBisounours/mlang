@@ -94,7 +94,7 @@
 %token SEMICOLON "semicolon";
 %token COMMA "comma";
 
-%type< ParserLayer::Command > command;
+%type< ParserLayer::AST_Node > command;
 %type< std::vector<uint64_t> > arguments;
 
 %start program
@@ -116,9 +116,9 @@ program :   {
             }
         | program command
             {
-                const Command &cmd = $2;
+                const AST_Node &cmd = $2;
                 cout << "command parsed, updating AST" << endl;
-                driver.addCommand(cmd);
+                driver.addAST_Node(cmd);
                 cout << endl << "prompt> ";
             }
         | program SEMICOLON
@@ -133,14 +133,14 @@ command : STRING LEFTPAR RIGHTPAR
         {
             string &id = $1;
             cout << "ID: " << id << endl;
-            $$ = Command(id);
+            $$ = AST_Node(id);
         }
     | STRING LEFTPAR arguments RIGHTPAR
         {
             string &id = $1;
             const std::vector<uint64_t> &args = $3;
             cout << "function: " << id << ", " << args.size() << endl;
-            $$ = Command(id, args);
+            $$ = AST_Node(id, args);
         }
     ;
 
