@@ -41,7 +41,7 @@
     #include <string>
     #include <vector>
     #include <stdint.h>
-    #include "command.h"
+    #include "ast.hpp"
 
     using namespace std;
 
@@ -59,9 +59,9 @@
 %code top
 {
     #include <iostream>
-    #include "scanner.h"
+    #include "scanner.hpp"
     #include "parser.hpp"
-    #include "parser_handler.h"
+    #include "parser_handler.hpp"
     #include "location.hh"
     
     // yylex() arguments are defined in parser.y

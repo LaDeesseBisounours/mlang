@@ -1,4 +1,4 @@
-#include "parser_handler.h"
+#include "parser_handler.hpp"
 #include <sstream>
 // TODO: Include your class to test here.
 #define BOOST_TEST_MODULE MyTest

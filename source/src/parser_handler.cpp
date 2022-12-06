@@ -26,8 +26,8 @@
  * 
  */
 
-#include "parser_handler.h"
-#include "command.h"
+#include "parser_handler.hpp"
+#include "ast.hpp"
 
 #include <sstream>
 

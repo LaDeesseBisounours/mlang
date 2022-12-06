@@ -27,9 +27,9 @@
  */
 
 #include <iostream>
-#include "scanner.h"
+#include "scanner.hpp"
 #include "parser.hpp"
-#include "parser_handler.h"
+#include "parser_handler.hpp"
 
 using namespace ParserLayer;
 using namespace std;

@@ -29,8 +29,8 @@
 %{
 	#include <iostream>
 	#include <cstdlib>
-	#include "scanner.h"
-	#include "parser_handler.h"
+	#include "scanner.hpp"
+	#include "parser_handler.hpp"
 	#include "parser.hpp"
 	#include "location.hh"
 

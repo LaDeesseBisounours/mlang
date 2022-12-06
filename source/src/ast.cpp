@@ -26,7 +26,7 @@
  * 
  */
 
-#include "command.h"
+#include "ast.hpp"
 
 #include <iostream>
 #include <sstream>
