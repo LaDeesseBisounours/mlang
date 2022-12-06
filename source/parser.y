@@ -34,7 +34,7 @@
 %define api.token.constructor
 %define api.value.type variant
 %define parse.assert
-%define api.namespace { EzAquarii }
+%define api.namespace { ParserLayer }
 %code requires
 {
     #include <iostream>
@@ -45,7 +45,7 @@
 
     using namespace std;
 
-    namespace EzAquarii {
+    namespace ParserLayer {
         class Scanner;
         class Interpreter;
     }
@@ -65,7 +65,7 @@
     #include "location.hh"
     
     // yylex() arguments are defined in parser.y
-    static EzAquarii::Parser::symbol_type yylex(EzAquarii::Scanner &scanner, EzAquarii::Interpreter &driver) {
+    static ParserLayer::Parser::symbol_type yylex(ParserLayer::Scanner &scanner, ParserLayer::Interpreter &driver) {
         return scanner.get_next_token();
     }
     
@@ -73,13 +73,13 @@
     // x and y are same as in above static function
     // #define yylex(x, y) scanner.get_next_token()
     
-    using namespace EzAquarii;
+    using namespace ParserLayer;
 }
 
-%lex-param { EzAquarii::Scanner &scanner }
-%lex-param { EzAquarii::Interpreter &driver }
-%parse-param { EzAquarii::Scanner &scanner }
-%parse-param { EzAquarii::Interpreter &driver }
+%lex-param { ParserLayer::Scanner &scanner }
+%lex-param { ParserLayer::Interpreter &driver }
+%parse-param { ParserLayer::Scanner &scanner }
+%parse-param { ParserLayer::Interpreter &driver }
 %locations
 %define parse.trace
 %define parse.error verbose
@@ -94,7 +94,7 @@
 %token SEMICOLON "semicolon";
 %token COMMA "comma";
 
-%type< EzAquarii::Command > command;
+%type< ParserLayer::Command > command;
 %type< std::vector<uint64_t> > arguments;
 
 %start program
@@ -164,7 +164,7 @@ arguments : NUMBER
 %%
 
 // Bison expects us to provide implementation - otherwise linker complains
-void EzAquarii::Parser::error(const location &loc , const std::string &message) {
+void ParserLayer::Parser::error(const location &loc , const std::string &message) {
         
         // Location should be initialized inside scanner action, but is not in this example.
         // Let's grab location directly from driver class.

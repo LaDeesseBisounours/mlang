@@ -31,7 +31,7 @@
 #include <iostream>
 #include <sstream>
 
-using namespace EzAquarii;
+using namespace ParserLayer;
 using std::cout;
 using std::endl;
 

@@ -38,7 +38,7 @@
 
 	// Original yyterminate() macro returns int. Since we're using Bison 3 variants
 	// as tokens, we must redefine it to change type from `int` to `Parser::semantic_type`
-	#define yyterminate() EzAquarii::Parser::make_END(EzAquarii::location());
+	#define yyterminate() ParserLayer::Parser::make_END(ParserLayer::location());
 
 	// This will track current scanner location.
 	// Action is called when length of the token is known.
@@ -59,34 +59,34 @@
 %option noyywrap
 %option c++
 %option yyclass="Scanner"
-%option prefix="EzAquarii_"
+%option prefix="ParserLayer_"
 
 %%
 
 
 [a-z]+      { 
                 cout << "Scanner: identifier [" << yytext << "]" << endl;
-                return EzAquarii::Parser::make_STRING(yytext, EzAquarii::location( /* put location data here if you want */ )); 
+                return ParserLayer::Parser::make_STRING(yytext, ParserLayer::location( /* put location data here if you want */ )); 
             }
             
 \(          {
                 cout << "Scanner: '('" << endl;
-                return EzAquarii::Parser::make_LEFTPAR(EzAquarii::location());
+                return ParserLayer::Parser::make_LEFTPAR(ParserLayer::location());
             }
             
 \)          { 
                 cout << "Scanner: ')'" << endl;
-                return EzAquarii::Parser::make_RIGHTPAR(EzAquarii::location());
+                return ParserLayer::Parser::make_RIGHTPAR(ParserLayer::location());
             }
             
 ;           {
                 cout << "Scanner: ';'" << endl;
-                return EzAquarii::Parser::make_SEMICOLON(EzAquarii::location());
+                return ParserLayer::Parser::make_SEMICOLON(ParserLayer::location());
             }
             
 ,           {
                 cout << "Scanner: ','" << endl;
-                return EzAquarii::Parser::make_COMMA(EzAquarii::location());
+                return ParserLayer::Parser::make_COMMA(ParserLayer::location());
             }
             
 [\n\t ]     {
@@ -96,7 +96,7 @@
 [1-9][0-9]* {
                 cout << "Scanner: decimal number: " << yytext << endl;
                 uint64_t number = strtoull(yytext, 0, 10);
-                return EzAquarii::Parser::make_NUMBER(number, EzAquarii::location());
+                return ParserLayer::Parser::make_NUMBER(number, ParserLayer::location());
             }
 
 .           { 

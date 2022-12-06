@@ -31,7 +31,7 @@
 
 #include <sstream>
 
-using namespace EzAquarii;
+using namespace ParserLayer;
 
 Interpreter::Interpreter() :
     m_commands(),
