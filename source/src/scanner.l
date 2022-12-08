@@ -64,24 +64,28 @@
 %%
 
 
-[a-z]+      { 
+[a-zA-Z_]+  { 
                 cout << "Scanner: identifier [" << yytext << "]" << endl;
-                return ParserLayer::Parser::make_STRING(yytext, ParserLayer::location( /* put location data here if you want */ )); 
+                return ParserLayer::Parser::make_NAME_ID(yytext, ParserLayer::location( /* put location data here if you want */ )); 
             }
             
 \(          {
                 cout << "Scanner: '('" << endl;
-                return ParserLayer::Parser::make_LEFTPAR(ParserLayer::location());
+                return ParserLayer::Parser::make_PARENTHESES_OPEN(ParserLayer::location());
             }
             
 \)          { 
                 cout << "Scanner: ')'" << endl;
-                return ParserLayer::Parser::make_RIGHTPAR(ParserLayer::location());
+                return ParserLayer::Parser::make_PARENTHESES_CLOSE(ParserLayer::location());
             }
             
 ;           {
                 cout << "Scanner: ';'" << endl;
                 return ParserLayer::Parser::make_SEMICOLON(ParserLayer::location());
+            }
+:           {
+                cout << "Scanner: ';'" << endl;
+                return ParserLayer::Parser::make_COLON(ParserLayer::location());
             }
             
 ,           {
@@ -89,14 +93,37 @@
                 return ParserLayer::Parser::make_COMMA(ParserLayer::location());
             }
             
+\[          {
+                cout << "Scanner: '['" << endl;
+                return ParserLayer::Parser::make_BRACKETS_OPEN(ParserLayer::location());
+            }
+\]          {
+                cout << "Scanner: ']'" << endl;
+                return ParserLayer::Parser::make_BRACKETS_CLOSE(ParserLayer::location());
+            }
+\{          {
+                cout << "Scanner: '{'" << endl;
+                return ParserLayer::Parser::make_CURLY_BRACKETS_OPEN(ParserLayer::location());
+            }
+\}          {
+                cout << "Scanner: '}'" << endl;
+                return ParserLayer::Parser::make_CURLY_BRACKETS_CLOSE(ParserLayer::location());
+            }
+\.          {
+                cout << "Scanner: '.'" << endl;
+                return ParserLayer::Parser::make_DOT(ParserLayer::location());
+            }
+->          {
+                cout << "Scanner: '->'" << endl;
+                return ParserLayer::Parser::make_ARROW(ParserLayer::location());
+            }
 [\n\t ]     {
                 //cout << "Scanner: whitechar (ignored)" << endl;
             }
 
 [1-9][0-9]* {
                 cout << "Scanner: decimal number: " << yytext << endl;
-                uint64_t number = strtoull(yytext, 0, 10);
-                return ParserLayer::Parser::make_NUMBER(number, ParserLayer::location());
+                return ParserLayer::Parser::make_NUMBER(yytext, ParserLayer::location());
             }
 
 .           { 

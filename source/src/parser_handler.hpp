@@ -100,7 +100,7 @@ private:
 private:
     Scanner m_scanner;
     Parser m_parser;
-    std::vector<AST_Node> m_commands;  // Example AST
+    std::vector<AST_Node*> m_commands;  // Example AST
     unsigned int m_location;          // Used by scanner
 };
 

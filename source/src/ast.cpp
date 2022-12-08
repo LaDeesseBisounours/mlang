@@ -32,47 +32,82 @@
 #include <sstream>
 
 using namespace ParserLayer;
-using std::cout;
-using std::endl;
+using namespace std;
 
-AST_Node::AST_Node(const std::string &name, const std::vector<uint64_t> arguments) :
-    m_name(name),
-    m_args(arguments)
+AST_Node::AST_Node(AST_Node::AST_Type t) :
+    _type(t),
+    _content(),
+    _left(nullptr),
+    _right(nullptr)
 {
 }
-
-AST_Node::AST_Node(const std::string &name) :
-    m_name(name),
-    m_args()
-{
+AST_Node::AST_Node(AST_Node& other)
+    :
+    _type(other.getType()),
+    _content(),
+    _left(other.getLeft()),
+    _right(other.getLeft())
+{             
+    copy(other._content.begin(), other._content.end(), std::back_inserter(this->_content));
+    cout << "copy constructor called" << endl;
 }
 
-AST_Node::AST_Node() :
-    m_name(),
-    m_args()
+AST_Node::AST_Node(AST_Node&& other)
+    :
+    _type(other.getType()),
+    _content(move(other._content)),
+    _left(other.getLeft()),
+    _right(other.getLeft())
 {
+    cout << "move constructor called" << endl;
 }
+
+AST_Node::AST_Node(AST_Node::AST_Type t, vector<string> &vec) :
+    _type(t),
+    _content(vec),
+    _left(nullptr),
+    _right(nullptr)
+{
+    cout << "common constructor called" << endl;
+}
+
+
 
 AST_Node::~AST_Node()
 {
 }
-    
-std::string AST_Node::str() const {
-    std::stringstream ts;
-    ts << "name = [" << m_name << "], ";
-    ts << "arguments = [";
-    
-    for(int i = 0; i < m_args.size(); i++) {
-        ts << m_args[i];
-        if(i < m_args.size() - 1) {
-            ts << ", ";
-        }
-    }
-    
-    ts << "]";
-    return ts.str();
+
+
+void AST_Node::setLeft(AST_Node *n) noexcept
+{
+    _left = n;
+}
+void AST_Node::setRight(AST_Node *n) noexcept
+{
+    _right = n;
+}
+AST_Node* AST_Node::getLeft(void) const noexcept
+{
+    return _left;
+}
+AST_Node* AST_Node::getRight(void) const noexcept
+{
+    return _right;
 }
 
-std::string AST_Node::name() const {
-    return m_name;
+AST_Node::AST_Type AST_Node::getType() const noexcept
+{
+    return _type;
 }
+
+vector<string>& AST_Node::getContent() 
+{
+    return _content;
+}
+
+void AST_Node::pushContent(string s)
+{
+    _content.push_back(s);
+
+}
+    

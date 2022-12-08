@@ -49,26 +49,24 @@ int ParserHandler::parse() {
 
 void ParserHandler::clear() {
     m_location = 0;
-    m_commands.clear();
 }
 
 std::string ParserHandler::str() const {
     std::stringstream s;
-    s << "ParserHandler: " << m_commands.size() << " commands received from command line." << endl;
-    for(int i = 0; i < m_commands.size(); i++) {
-        s << " * " << m_commands[i].str() << endl;
-    }
+    //s << "ParserHandler: " << m_commands.size() << " commands received from command line." << endl;
+    //for(int i = 0; i < m_commands.size(); i++) {
+    //    s << " * " << m_commands[i].str() << endl;
+    //}
+    s << "hello" << endl;
     return s.str();
 }
 
 void ParserHandler::switchInputStream(std::istream *is) {
     m_scanner.switch_streams(is, NULL);
-    m_commands.clear();    
 }
 
 void ParserHandler::addAST_Node(const AST_Node &cmd)
 {
-    m_commands.push_back(cmd);
 }
 
 void ParserHandler::increaseLocation(unsigned int loc) {

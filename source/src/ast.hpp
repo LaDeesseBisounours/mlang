@@ -26,14 +26,17 @@
  * 
  */
 
-#ifndef COMMAND_H
-#define COMMAND_H
+#ifndef AST_HPP
+#define AST_HPP
 
 #include <string>
 #include <vector>
+#include <variant>
 #include <stdint.h>
 
+using namespace std;
 namespace ParserLayer {
+
 
 /**
  * AST node. If you can call it AST at all...
@@ -42,19 +45,39 @@ namespace ParserLayer {
 class AST_Node
 {
 public:
-    AST_Node(const std::string &name, const std::vector<uint64_t> arguments);
-    AST_Node(const std::string &name);
-    AST_Node();
+    enum class AST_Type {
+        IDENTIFIER, //Lel::lol::myId
+        DOT_DEREFERENCE, // mystruct.lol
+        ARROW_DEREFERENCE, // mystruct->lol
+        PRPERTY_LIST,
+        PROPERTY_SINGLE,
+        EXPR,
+        EXPR_LIST,
+        FUNCTION_CALL
+    };
+public:
+    AST_Node(AST_Type t);
+    AST_Node(AST_Type t, vector<string> &vec);
+    AST_Node(AST_Node& other);
+    AST_Node(AST_Node&& other);
     ~AST_Node();
     
-    std::string str() const;
-    std::string name() const;
+    //accessors
+    void setLeft(AST_Node *n) noexcept;
+    void setRight(AST_Node *n) noexcept;
+    AST_Node* getLeft() const noexcept;
+    AST_Node* getRight() const noexcept;
+    AST_Node::AST_Type getType() const noexcept;
+    vector<string>& getContent();
+    void pushContent(std::string s);
     
 private:
-    std::string m_name;
-    std::vector<uint64_t> m_args;
+    AST_Node::AST_Type _type;
+    vector<string> _content;
+    AST_Node* _left;
+    AST_Node* _right;
 };
 
 }
 
-#endif // COMMAND_H
+#endif // AST_HPP
