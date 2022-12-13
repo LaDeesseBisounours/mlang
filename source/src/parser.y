@@ -108,6 +108,7 @@
 %token COLON SEMICOLON //: ;
 %token DOT ARROW
 %token COMMA
+%token POINTER REFERENCE
 
 
 //%type< ParserLayer::AST_Node > command;
@@ -118,14 +119,106 @@
 %type< AST_Node* > r_dereference ;
 %type< AST_Node* > r_parameter_list ;
 %type< AST_Node* > r_identifier ;
+%type< AST_Node* > r_name_property ;
+%type< AST_Node* > r_block_property ;
+%type< AST_Node* > r_single_property ;
+%type< AST_Node* > r_any_property ;
 %start r_expr
 
 %%
 
+//r_statement
+//    : r_var assignement
+//    | r_
+
+
+
+r_var_assignement
+    : r_type NAME_ID SEMICOLON 
+    | r_type NAME_ID EQUAL r_expr SEMICOLON 
+
+r_type
+    : r_type_np
+    | r_type r_any_property
+    ;
+
+r_type_np
+    : r_identifier
+    | r_type_np POINTER
+    | r_type_np REFERENCE
+    | r_type_np BRACKETS_OPEN BRACKETS_CLOSE
+    | r_type_np BRACKETS_OPEN NUMBER BRACKETS_CLOSE
+    ;
+
+
+r_any_property
+    : r_block_property
+    {   $$ = $1;    }
+    | r_name_property
+    {   $$ = $1;    }
+    | r_single_property
+    {   $$ = $1;    }
+    | r_list_property
+    {   $$ = $1;    }
+    ;
+r_block_property
+    :  PROPERTY_SIGN NAME_ID CURLY_BRACKETS_OPEN r_expr_list CURLY_BRACKETS_CLOSE
+    {
+       AST_Node* res = new AST_Node(AST_Node::AST_Type::BLOCK_PROPERTY);
+       res.pushContent($2);
+       res->setLeft($4);
+       $$ = res;
+    }
+    ;
+
+r_list_property
+    : PROPERTY_SIGN NAME_ID BRACKETS_OPEN r_expr_list BRACKETS_CLOSE
+    ;
+r_name_property
+   :  PROPERTY_SIGN NAME_ID 
+   {
+       AST_Node* res = new AST_Node(AST_Node::AST_Type::NAME_PROPERTY);
+       res->pushContent($2);
+       $$ = res;
+   }
+   ;
+
+r_single_property
+    : PROPERTY_SIGN NAME_ID PARENTHESES_OPEN r_expr PARENTHESES_CLOSE
+    {
+       AST_Node* res = new AST_Node(AST_Node::AST_Type::NAME_PROPERTY);
+       res->pushContent($2);
+       res->setLeft($4);
+       $$ = res;
+    }
+    ;
+
+r_expr_list
+    : r_expr SEMICOLON
+    {
+       AST_Node* res = new AST_Node(AST_Node::AST_Type::EXPR_LIST);
+       res->setLeft($1);
+       $$ = res;
+    }
+    | r_expr_list r_expr SEMICOLON
+    {
+       AST_Node* res = new AST_Node(AST_Node::AST_Type::EXPR_LIST);
+       res->setLeft($1);
+       res->setRight($2);
+       $$ = res;
+    }
+    ;
+
 r_expr
-    : r_function_call
+    : r_identifier
     {   $$ = $1;    }
     | r_dereference
+    {   $$ = $1;    }
+    | r_function_call
+    {   $$ = $1;    }
+    | r_expr_list
+    {   $$ = $1;    }
+    | r_any_property
     {   $$ = $1;    }
     ;
 
@@ -162,7 +255,7 @@ r_function_call
     ;
 
 r_dereference
-    : r_identifier
+    : r_expr
     {
         $$ = $1;
     }

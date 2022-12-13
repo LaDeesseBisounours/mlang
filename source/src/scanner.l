@@ -68,7 +68,25 @@
                 cout << "Scanner: identifier [" << yytext << "]" << endl;
                 return ParserLayer::Parser::make_NAME_ID(yytext, ParserLayer::location( /* put location data here if you want */ )); 
             }
+
+[1-9][0-9]* {
+                cout << "Scanner: decimal number: " << yytext << endl;
+                return ParserLayer::Parser::make_NUMBER(yytext, ParserLayer::location());
+            }
+
             
+'           {
+                cout << "Scanner: '" << endl;
+                return ParserLayer::Parser::make_SINGLE_APOSTROPHE(ParserLayer::location());
+            }
+\"          {
+                cout << "Scanner: '\"'" << endl;
+                return ParserLayer::Parser::make_DOUBLE_APOSTROPHE(ParserLayer::location());
+            }
+#           {
+                cout << "Scanner: #" << endl;
+                return ParserLayer::Parser::make_PROPERTY_SIGN(ParserLayer::location());
+            }
 \(          {
                 cout << "Scanner: '('" << endl;
                 return ParserLayer::Parser::make_PARENTHESES_OPEN(ParserLayer::location());
@@ -121,10 +139,6 @@
                 //cout << "Scanner: whitechar (ignored)" << endl;
             }
 
-[1-9][0-9]* {
-                cout << "Scanner: decimal number: " << yytext << endl;
-                return ParserLayer::Parser::make_NUMBER(yytext, ParserLayer::location());
-            }
 
 .           { 
                 cout << "Scanner: unknown character [" << yytext << "]" << endl; 

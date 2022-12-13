@@ -18,7 +18,6 @@ BOOST_AUTO_TEST_CASE(MyTestCase)
 }
 BOOST_AUTO_TEST_CASE(MyTestCase2)
 {
-
     ParserLayer::ParserHandler i;
     std::stringstream ss;
     

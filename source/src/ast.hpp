@@ -53,7 +53,10 @@ public:
         PROPERTY_SINGLE,
         EXPR,
         EXPR_LIST,
-        FUNCTION_CALL
+        FUNCTION_CALL,
+        NAME_PROPERTY,
+        BLOCK_PROPERTY,
+        SINGLE_PROPERTY
     };
 public:
     AST_Node(AST_Type t);
