@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 set(CMAKE_CXX_COMPILER "/usr/bin/g++")
 project(testparser VERSION 1.0 )
+
 find_package(FLEX 2.6 REQUIRED)
 find_package(BISON 3.0 REQUIRED)
 find_package(Boost COMPONENTS system filesystem unit_test_framework REQUIRED)
+
 include_directories("src")
 
 set(SRC_DIR "src")

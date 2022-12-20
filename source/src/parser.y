@@ -110,6 +110,9 @@
 %token COMMA
 %token POINTER REFERENCE
 
+//key words
+%token CLASS STRUCT FUNCTION LET ALIAS AS
+
 
 //%type< ParserLayer::AST_Node > command;
 //%type< std::vector<uint64_t> > arguments;
@@ -125,6 +128,14 @@
 %type< AST_Node* > r_any_property ;
 %start r_expr
 
+// operation order, each operation h
+// basic_expr
+// parentheses_op
+// unary operator
+// mult_operator
+// add_operator
+// bool_operator
+
 %%
 
 //r_statement
@@ -133,21 +144,69 @@
 
 
 
-r_var_assignement
-    : r_type NAME_ID SEMICOLON 
-    | r_type NAME_ID EQUAL r_expr SEMICOLON 
+//r_var_assignement
+//    : r_type NAME_ID SEMICOLON 
+//    | r_type NAME_ID EQUAL r_expr SEMICOLON 
 
-r_type
-    : r_type_np
-    | r_type r_any_property
+r_statement
+    : 
+    |
     ;
 
-r_type_np
+r_statement_list
+    : 
+    |
+    ;
+
+
+r_function_decl
+    : FUNCTION 
+    |
+    ;
+r_struct_decl
+    : 
+    |
+    ;
+r_class_decl
+    : 
+    |
+    ;
+
+r_sub_var_decl
+    : 
+    |
+    ;
+r_expr
     : r_identifier
-    | r_type_np POINTER
-    | r_type_np REFERENCE
-    | r_type_np BRACKETS_OPEN BRACKETS_CLOSE
-    | r_type_np BRACKETS_OPEN NUMBER BRACKETS_CLOSE
+    {   $$ = $1;    }
+    | r_dereference
+    {   $$ = $1;    }
+    | r_function_call
+    {   $$ = $1;    }
+    | r_any_property
+    {   $$ = $1;    }
+    | r_var_decl
+    {   $$ = $1;    }
+    ;
+
+r_typedef_decl
+    : TYPEDEF r_type AS r_identifier
+    ;
+
+r_var_decl
+    : LET NAME_ID
+    | LET NAME_ID EQUAL r_expr
+    | LET NAME_ID COLON r_type 
+    | LET NAME_ID COLON r_type EQUAL r_expr
+    ;
+
+r_type
+    : r_identifier
+    | r_type POINTER
+    | r_type REFERENCE
+    | r_type BRACKETS_OPEN BRACKETS_CLOSE
+    | r_type BRACKETS_OPEN NUMBER BRACKETS_CLOSE
+    | r_type r_any_property
     ;
 
 
@@ -193,34 +252,6 @@ r_single_property
     }
     ;
 
-r_expr_list
-    : r_expr SEMICOLON
-    {
-       AST_Node* res = new AST_Node(AST_Node::AST_Type::EXPR_LIST);
-       res->setLeft($1);
-       $$ = res;
-    }
-    | r_expr_list r_expr SEMICOLON
-    {
-       AST_Node* res = new AST_Node(AST_Node::AST_Type::EXPR_LIST);
-       res->setLeft($1);
-       res->setRight($2);
-       $$ = res;
-    }
-    ;
-
-r_expr
-    : r_identifier
-    {   $$ = $1;    }
-    | r_dereference
-    {   $$ = $1;    }
-    | r_function_call
-    {   $$ = $1;    }
-    | r_expr_list
-    {   $$ = $1;    }
-    | r_any_property
-    {   $$ = $1;    }
-    ;
 
 r_parameter_list
     : r_expr
