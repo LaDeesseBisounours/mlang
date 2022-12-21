@@ -109,6 +109,9 @@
 %token DOT ARROW
 %token COMMA
 %token POINTER REFERENCE
+%token INCREMENT DECREMENT
+
+%token PLUS MINUS ABS DIVISION MOD
 
 //key words
 %token CLASS STRUCT FUNCTION LET ALIAS AS
@@ -143,13 +146,13 @@
 //    | r_
 
 
-r_namespaced_id
+r_identifier
     : NAME_ID
     | r_namespace_id COLON COLON NAME_ID
     ;
 
 r_primary_expr
-    : r_namespace_id
+    : r_identifier
     | NUMBER
     // | STRING_LITERAL
     |  PARENTHESES_OPEN expr PARENTHESES_CLOSE
@@ -162,7 +165,14 @@ r_postfix_expr
     | r_postfix_expr BRACKETS_OPEN expr BRACKETS_CLOSE
     | r_postfix_expr DOT NAME_ID
     | r_postfix_expr ARROW NAME_ID
+    | r_postfix_expr INCREMENT
+    | r_postfix_expr DECREMENT
     ;
+
+r_unary_base
+    : r_postfix_expr
+    | POINTER r_unary_base
+    | REFERENCE r_unary_base 
 
 expr;
 expr_list;
