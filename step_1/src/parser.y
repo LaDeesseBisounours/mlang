@@ -108,13 +108,25 @@
 %token COLON SEMICOLON //: ;
 %token DOT ARROW
 %token COMMA
-%token POINTER REFERENCE
 %token INCREMENT DECREMENT
 
-%token PLUS MINUS ABS DIVISION MOD
+%token BOOL_NOT
+%token ASSIGN_MOVE ASSIGN_COPY ASSIGN_DEREF ASSIGN_REF
 
 //key words
 %token CLASS STRUCT FUNCTION LET ALIAS AS
+
+//binary ops
+%token PLUS MINUS ABS MULT DIVISION MOD
+%token DOUBLE_ARR_LEFT DOUBLE_ARR_RIGHT
+
+//bool bin ops
+%token BOOL_LT BOOL_LTE BOOL_GT BOOL_GTE
+%token BOOL_AND BOOL_OR
+%token BOOL_EQ BOOL_INEQ
+
+//ranges
+%token RANGE UNION INTERSECTION
 
 
 //%type< ParserLayer::AST_Node > command;
@@ -141,25 +153,25 @@
 
 %%
 
-//r_statement
-//    : r_var assignement
-//    | r_
-
-
 r_identifier
     : NAME_ID
     | r_namespace_id COLON COLON NAME_ID
     ;
 
+
 r_primary_expr
     : r_identifier
     | NUMBER
     // | STRING_LITERAL
-    |  PARENTHESES_OPEN expr PARENTHESES_CLOSE
+    ;
+
+r_parentheses_expr
+    : r_primary_expr
+    | PARENTHESES_OPEN expr PARENTHESES_CLOSE
     ;
 
 r_postfix_expr
-    : r_primary_expr 
+    : r_parentheses_expr 
     | r_postfix_expr PARENTHESES_OPEN PARENTHESES_CLOSE
     | r_postfix_expr PARENTHESES_OPEN expr_list PARENTHESES_CLOSE
     | r_postfix_expr BRACKETS_OPEN expr BRACKETS_CLOSE
@@ -171,8 +183,102 @@ r_postfix_expr
 
 r_unary_base
     : r_postfix_expr
-    | POINTER r_unary_base
-    | REFERENCE r_unary_base 
+    | PLUS r_unary_base 
+    | MINUS r_unary_base 
+    | ABS r_unary_base
+    | BOOL_NOT r_unary_base
+    ;
+
+r_unary_ref
+    : r_unary_base
+    | ASSIGN_REF  r_unary_ref
+    | ASSIGN_DEREF r_unary_ref
+    ;
+
+r_unary_ptr
+    : r_unary_ref
+    | ASSIGN_MOVE r_unary_ptr
+    | ASSIGN_COPY r_unary_ptr
+    ;
+
+r_mult_expr
+    : r_unary_ptr
+    | r_mult_expr MULT r_unary_ptr
+    | r_mult_expr DIV r_unary_ptr
+    | r_mult_expr MOD r_unary_ptr
+    ;
+
+r_add_expr
+    : r_mult_expr
+    | r_add_expr PLUS r_mult_expr
+    | r_add_expr MINUS r_mult_expr
+    ;
+
+r_doublearrow_expr
+    : r_add_expr
+    | r_doublearrow_expr DOUBLE_ARR_LEFT r_add_expr
+    | r_doublearrow_expr DOUBLE_ARR_RIGHT r_add_expr
+    ;
+
+r_bool_ineq
+    : r_doublearrow_expr 
+    | r_bool_ineq BOOL_LT r_doublearrow_expr
+    | r_bool_ineq BOOL_LTE r_doublearrow_expr
+    | r_bool_ineq BOOL_GT r_doublearrow_expr
+    | r_bool_ineq BOOL_GTE r_doublearrow_expr
+    ;
+
+r_bool_and
+    : r_bool_ineq
+    | r_bool_and BOOL_AND r_bool_ineq
+    ;
+
+r_bool_or
+    : r_bool_and
+    | r_bool_or BOOL_OR r_bool_and
+    ;
+
+r_bool_eq
+    : r_bool_or
+    | r_bool_eq BOOL_EQ r_bool_or
+    | r_bool_eq BOOL_INEQ r_bool_or
+    ;
+
+r_simple_range
+    : BRACKETS_CLOSE r_expr SEMICOLON r_expr BRACKETS_CLOSE
+    | BRACKETS_CLOSE r_expr SEMICOLON r_expr BRACKETS_OPEN
+    | BRACKETS_OPEN r_expr SEMICOLON r_expr BRACKETS_CLOSE
+    | BRACKETS_OPEN r_expr SEMICOLON r_expr BRACKETS_OPEN
+    //unbound
+    | BRACKETS_CLOSE SEMICOLON r_expr BRACKETS_CLOSE
+    | BRACKETS_CLOSE SEMICOLON r_expr BRACKETS_OPEN
+    | BRACKETS_CLOSE r_expr SEMICOLON BRACKETS_OPEN
+    | BRACKETS_OPEN r_expr SEMICOLON BRACKETS_OPEN
+    ;
+r_range_intersection
+    : r_simple_range
+    | r_range_intersection INTERSECTION r_simple_range
+    ;
+
+r_range_union
+    : r_range_intersection
+    | r_range_union UNION r_range_intersection
+    ;
+
+r_range
+    : RANGE r_range_union
+    ;
+
+
+r_expr
+    : r_bool_eq
+    | r_range
+    ;
+
+
+
+
+
 
 expr;
 expr_list;
