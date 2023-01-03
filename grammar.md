@@ -99,14 +99,14 @@ can be followed by
 ## steps 1
 compile functions, variables with integer type
 *should compile and ret value 65*
-fn  main() -> Integer {
+fn Integer main() {
     let i : Integer#{ #value: range ]0; 1000]; } = 15;
     let result : Integer#{ #value: range ]0; 1000]; } = i + 5 * 10;
     return result;
 } 
 
 typedef Integer#{ #value: range ]0; 1000]; } as smalluint;
-fn main() -> Integer {
+fn Integer main()  {
     let i : smalluint = 15;
     let result : smalluint = i + 5 * 10;
     return result;
@@ -115,7 +115,7 @@ fn main() -> Integer {
 
 *should not compile*
 typedef Integer#{ #value: range ]- 1000; 0]; } as smalluint;
-fn main() -> Integer {
+fn Integer main()  {
     let i : smalluint = 15;
     let result : smalluint = i + 5 * 10;
     return result;
@@ -125,7 +125,7 @@ fn main() -> Integer {
 ## step 2
 add strings, range upadate and calls to print
 //============================
-fn fibo(n: Integer#value: range [0; [ ) -> Integer {
+fn Integer#value: range [1;[ fibo(n: Integer#value: range [0; [ )  {
     if (n == 0) {
         return 1;
     } 
@@ -136,8 +136,8 @@ fn fibo(n: Integer#value: range [0; [ ) -> Integer {
     return fibo(n - 1) + fibo(n - 2)
 }
 
-fn main() -> Integer {
-    let result : Integer = fibo(10);
+fn Integer main() {
+    let Integer result = fibo(10);
     std::print("Fibo result is equal to " + result.toString());
     return 0;
 } 

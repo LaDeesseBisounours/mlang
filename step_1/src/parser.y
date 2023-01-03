@@ -244,20 +244,47 @@ r_bool_eq
     | r_bool_eq BOOL_INEQ r_bool_or
     ;
 
-r_simple_range
-    : BRACKETS_CLOSE r_expr SEMICOLON r_expr BRACKETS_CLOSE
-    | BRACKETS_CLOSE r_expr SEMICOLON r_expr BRACKETS_OPEN
-    | BRACKETS_OPEN r_expr SEMICOLON r_expr BRACKETS_CLOSE
-    | BRACKETS_OPEN r_expr SEMICOLON r_expr BRACKETS_OPEN
-    //unbound
-    | BRACKETS_CLOSE SEMICOLON r_expr BRACKETS_CLOSE
-    | BRACKETS_CLOSE SEMICOLON r_expr BRACKETS_OPEN
-    | BRACKETS_CLOSE r_expr SEMICOLON BRACKETS_OPEN
-    | BRACKETS_OPEN r_expr SEMICOLON BRACKETS_OPEN
+r_assignment_expr
+    : r_identifier EQUAL r_expr
+
+r_expr
+    : r_bool_eq
+    | r_assignment_expr
     ;
+
+//====let======================================================================
+
+r_let_statement
+    : LET NAME_ID SEMICOLON
+    | LET NAME_ID COLON r_type SEMICOLON
+    | LET NAME_ID EQUAL r_base_expr SEMICOLON
+    | LET NAME_ID COLON r_type EQUAL r_base_expr SEMICOLON
+
+//====function=================================================================
+r_function
+    : FUNCTION
+
+//====statement================================================================
+r_statement
+    : r_let_statement
+    | r_expr SEMICOLON
+    ;
+//====range====================================================================
+r_single_range
+    : BRACKETS_CLOSE r_add_expr SEMICOLON r_add_expr BRACKETS_CLOSE
+    | BRACKETS_CLOSE r_add_expr SEMICOLON r_add_expr BRACKETS_OPEN
+    | BRACKETS_OPEN r_add_expr SEMICOLON r_add_expr BRACKETS_CLOSE
+    | BRACKETS_OPEN r_add_expr SEMICOLON r_add_expr BRACKETS_OPEN
+    //unbound
+    | BRACKETS_CLOSE SEMICOLON r_add_expr BRACKETS_CLOSE
+    | BRACKETS_CLOSE SEMICOLON r_add_expr BRACKETS_OPEN
+    | BRACKETS_CLOSE r_add_expr SEMICOLON BRACKETS_OPEN
+    | BRACKETS_OPEN r_add_expr SEMICOLON BRACKETS_OPEN
+    ;
+
 r_range_intersection
-    : r_simple_range
-    | r_range_intersection INTERSECTION r_simple_range
+    : r_single_range
+    | r_range_intersection INTERSECTION r_single_range
     ;
 
 r_range_union
@@ -270,10 +297,90 @@ r_range
     ;
 
 
-r_expr
-    : r_bool_eq
+//====type=====================================================================
+r_type_np
+    : r_identifier
+    | r_type_np POINTER
+    | r_type_np REFERENCE
+    | r_type_np BRACKETS_OPEN BRACKETS_CLOSE
+    | r_type_np BRACKETS_OPEN NUMBER BRACKETS_CLOSE
     | r_range
     ;
+
+r_type
+    : r_type_np
+    | r_type r_any_property
+    ;
+
+//=============================================================================
+
+
+//=============================================================================
+//=============================================================================
+//=============================================================================
+//=============================================================================
+//=============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//=============================================================================
+//r_any_property
+//    : r_block_property
+//    {   $$ = $1;    }
+//    | r_name_property
+//    {   $$ = $1;    }
+//    | r_single_property
+//    {   $$ = $1;    }
+//    | r_list_property
+//    {   $$ = $1;    }
+//    ;
+//r_block_property
+//    :  PROPERTY_SIGN NAME_ID CURLY_BRACKETS_OPEN r_expr_list CURLY_BRACKETS_CLOSE
+//    {
+//       AST_Node* res = new AST_Node(AST_Node::AST_Type::BLOCK_PROPERTY);
+//       res.pushContent($2);
+//       res->setLeft($4);
+//       $$ = res;
+//    }
+//    ;
+//
+//r_list_property
+//    : PROPERTY_SIGN NAME_ID BRACKETS_OPEN r_expr_list BRACKETS_CLOSE
+//    ;
+//r_name_property
+//   :  PROPERTY_SIGN NAME_ID 
+//   {
+//       AST_Node* res = new AST_Node(AST_Node::AST_Type::NAME_PROPERTY);
+//       res->pushContent($2);
+//       $$ = res;
+//   }
+//   ;
+//
+//r_single_property
+//    : PROPERTY_SIGN NAME_ID PARENTHESES_OPEN r_expr PARENTHESES_CLOSE
+//    {
+//       AST_Node* res = new AST_Node(AST_Node::AST_Type::NAME_PROPERTY);
+//       res->pushContent($2);
+//       res->setLeft($4);
+//       $$ = res;
+//    }
+//    ;
+
 
 
 
