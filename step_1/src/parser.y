@@ -262,7 +262,8 @@ r_let_statement
 
 //====function=================================================================
 r_function
-    : FUNCTION
+    : FUNCTION r_type r_identifier PARENTHESES_OPEN PARENTHESES_CLOSE SEMICOLON
+    | FUNCTION r_type r_identifier PARENTHESES_OPEN PARENTHESES_CLOSE SEMICOLON
 
 //====statement================================================================
 r_statement
@@ -298,19 +299,15 @@ r_range
 
 
 //====type=====================================================================
-r_type_np
+r_type
     : r_identifier
-    | r_type_np POINTER
-    | r_type_np REFERENCE
-    | r_type_np BRACKETS_OPEN BRACKETS_CLOSE
-    | r_type_np BRACKETS_OPEN NUMBER BRACKETS_CLOSE
-    | r_range
+    | r_type POINTER
+    | r_type REFERENCE
+    | r_type BRACKETS_OPEN BRACKETS_CLOSE
+    | r_type BRACKETS_OPEN NUMBER BRACKETS_CLOSE
+    | r_type r_range
     ;
 
-r_type
-    : r_type_np
-    | r_type r_any_property
-    ;
 
 //=============================================================================
 
