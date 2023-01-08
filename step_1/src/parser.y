@@ -174,7 +174,7 @@
 
 r_identifier
     : NAME_ID
-    | r_namespace_id COLON COLON NAME_ID
+    | r_identifier COLON COLON NAME_ID
     ;
 
 
@@ -186,14 +186,14 @@ r_primary_expr
 
 r_parentheses_expr
     : r_primary_expr
-    | PARENTHESES_OPEN expr PARENTHESES_CLOSE
+    | PARENTHESES_OPEN r_expr PARENTHESES_CLOSE
     ;
 
 r_postfix_expr
     : r_parentheses_expr 
     | r_postfix_expr PARENTHESES_OPEN PARENTHESES_CLOSE
-    | r_postfix_expr PARENTHESES_OPEN expr_list PARENTHESES_CLOSE
-    | r_postfix_expr BRACKETS_OPEN expr BRACKETS_CLOSE
+    | r_postfix_expr PARENTHESES_OPEN r_expr_list PARENTHESES_CLOSE
+    | r_postfix_expr BRACKETS_OPEN r_expr BRACKETS_CLOSE
     | r_postfix_expr DOT NAME_ID
     | r_postfix_expr ARROW NAME_ID
     | r_postfix_expr INCREMENT
@@ -421,9 +421,6 @@ r_parameter_list
 
 
 
-
-expr;
-expr_list;
 
 //==============v0=============================================================
 //r_var_assignement

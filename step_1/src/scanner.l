@@ -135,12 +135,8 @@
             }
 
 
-\}
-
-          {
-                cout << "Scanner: '}
-
-'" << endl;
+\}          {
+                cout << "Scanner: '}'" << endl;
                 return ParserLayer::Parser::make_CURLY_BRACKETS_CLOSE(ParserLayer::location());
             }
 
@@ -157,7 +153,7 @@
             }
 
 
-++          {
+\+\+          {
                 cout << "Scanner: '++'" << endl;
                 return ParserLayer::Parser::make_INCREMENT(ParserLayer::location());
             }
@@ -223,7 +219,7 @@ ref         {
             }
 
 
-+           {
+\+           {
                 cout << "Scanner: '+'" << endl;
                 return ParserLayer::Parser::make_PLUS(ParserLayer::location());
             }
@@ -247,7 +243,7 @@ abs         {
             }
 
 
-/           {
+\/          {
                 cout << "Scanner: '/'" << endl;
                 return ParserLayer::Parser::make_DIVISION(ParserLayer::location());
             }
@@ -265,7 +261,7 @@ abs         {
             }
 
 
-<<          {
+\<\<        {
                 cout << "Scanner: '<<'" << endl;
                 return ParserLayer::Parser::make_DOUBLE_ARR_LEFT(ParserLayer::location());
             }
