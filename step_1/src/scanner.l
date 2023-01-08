@@ -183,22 +183,17 @@ copy        {
             }
 
 
-deref       {
-                cout << "Scanner: 'deref'" << endl;
+\*          {
+                cout << "Scanner: '*'" << endl;
                 return ParserLayer::Parser::make_ASSIGN_DEREF(ParserLayer::location());
             }
 
 
-ref         {
-                cout << "Scanner: 'ref'" << endl;
+&           {
+                cout << "Scanner: '&'" << endl;
                 return ParserLayer::Parser::make_ASSIGN_REF(ParserLayer::location());
             }
 
-
-ref         {
-                cout << "Scanner: ''" << endl;
-                return ParserLayer::Parser::make_(ParserLayer::location());
-            }
 
 
 def         {
@@ -236,11 +231,6 @@ abs         {
                 return ParserLayer::Parser::make_ABS(ParserLayer::location());
             }
 
-
-\*          {
-                cout << "Scanner: '*'" << endl;
-                return ParserLayer::Parser::make_MULT(ParserLayer::location());
-            }
 
 
 \/          {
@@ -312,6 +302,12 @@ or          {
 !=          {
                 cout << "Scanner: '!='" << endl;
                 return ParserLayer::Parser::make_BOOL_INEQ(ParserLayer::location());
+            }
+
+
+=          {
+                cout << "Scanner: '='" << endl;
+                return ParserLayer::Parser::make_EQUAL(ParserLayer::location());
             }
 
 

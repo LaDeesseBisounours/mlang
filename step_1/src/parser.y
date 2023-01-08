@@ -116,7 +116,7 @@
 %token CLASS STRUCT FUNCTION LET ALIAS AS
 
 //binary ops
-%token PLUS MINUS ABS MULT DIVISION MOD
+%token PLUS MINUS ABS DIVISION MOD EQUAL
 %token DOUBLE_ARR_LEFT DOUBLE_ARR_RIGHT
 
 //bool bin ops
@@ -222,8 +222,8 @@ r_unary_ptr
 
 r_mult_expr
     : r_unary_ptr
-    | r_mult_expr MULT r_unary_ptr
-    | r_mult_expr DIV r_unary_ptr
+    | r_mult_expr ASSIGN_DEREF r_unary_ptr
+    | r_mult_expr DIVISION r_unary_ptr
     | r_mult_expr MOD r_unary_ptr
     ;
 
@@ -280,7 +280,7 @@ r_expr_list
 
 r_let_statement
     : LET r_type NAME_ID SEMICOLON
-    | LET r_type NAME_ID EQUAL r_base_expr SEMICOLON
+    | LET r_type NAME_ID EQUAL r_expr SEMICOLON
     ;
 
 //====function=================================================================
@@ -336,8 +336,8 @@ r_range
 //====type=====================================================================
 r_type
     : r_identifier
-    | r_type POINTER
-    | r_type REFERENCE
+    | r_type ASSIGN_DEREF // * operator
+    | r_type ASSIGN_REF
     | r_type BRACKETS_OPEN BRACKETS_CLOSE
     | r_type BRACKETS_OPEN NUMBER BRACKETS_CLOSE
     | r_type r_range
