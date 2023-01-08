@@ -104,7 +104,6 @@
 %token CURLY_BRACKETS_OPEN CURLY_BRACKETS_CLOSE
 %token SINGLE_APOSTROPHE DOUBLE_APOSTROPHE
 
-%token PROPERTY_SIGN
 %token COLON SEMICOLON //: ;
 %token DOT ARROW
 %token COMMA
@@ -131,9 +130,6 @@
 
 //%type< ParserLayer::AST_Node > command;
 //%type< std::vector<uint64_t> > arguments;
-
-%type< AST_Node* > r_expr ;
-
 
 %type<AST_Node*> r_parameter_list;
 %type<AST_Node*> r_type;
