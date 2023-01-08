@@ -133,15 +133,38 @@
 //%type< std::vector<uint64_t> > arguments;
 
 %type< AST_Node* > r_expr ;
-%type< AST_Node* > r_function_call ;
-%type< AST_Node* > r_dereference ;
-%type< AST_Node* > r_parameter_list ;
-%type< AST_Node* > r_identifier ;
-%type< AST_Node* > r_name_property ;
-%type< AST_Node* > r_block_property ;
-%type< AST_Node* > r_single_property ;
-%type< AST_Node* > r_any_property ;
-%start r_expr
+
+
+%type<AST_Node*> r_parameter_list;
+%type<AST_Node*> r_type;
+%type<AST_Node*> r_range;
+%type<AST_Node*> r_range_union;
+%type<AST_Node*> r_range_intersection;
+%type<AST_Node*> r_single_range;
+%type<AST_Node*> r_statement_list;
+%type<AST_Node*> r_statement;
+%type<AST_Node*> r_function_statement;
+%type<AST_Node*> r_function_base;
+%type<AST_Node*> r_let_statement;
+%type<AST_Node*> r_expr_list;
+%type<AST_Node*> r_expr;
+%type<AST_Node*> r_assignment_expr;
+%type<AST_Node*> r_bool_eq;
+%type<AST_Node*> r_bool_or;
+%type<AST_Node*> r_bool_and;
+%type<AST_Node*> r_bool_ineq;
+%type<AST_Node*> r_doublearrow_expr;
+%type<AST_Node*> r_add_expr;
+%type<AST_Node*> r_mult_expr;
+%type<AST_Node*> r_unary_ptr;
+%type<AST_Node*> r_unary_ref;
+%type<AST_Node*> r_unary_base;
+%type<AST_Node*> r_postfix_expr;
+%type<AST_Node*> r_parentheses_expr;
+%type<AST_Node*> r_primary_expr;
+%type<AST_Node*> r_identifier;
+
+%start r_statement_list
 
 // operation order, each operation h
 // basic_expr
@@ -245,30 +268,47 @@ r_bool_eq
     ;
 
 r_assignment_expr
-    : r_identifier EQUAL r_expr
+    : r_unary_ref EQUAL r_expr
 
 r_expr
     : r_bool_eq
     | r_assignment_expr
     ;
 
+r_expr_list
+    : r_expr
+    | r_expr_list COMMA r_expr
+    ;
+
 //====let======================================================================
 
 r_let_statement
-    : LET NAME_ID SEMICOLON
-    | LET NAME_ID COLON r_type SEMICOLON
-    | LET NAME_ID EQUAL r_base_expr SEMICOLON
-    | LET NAME_ID COLON r_type EQUAL r_base_expr SEMICOLON
+    : LET r_type NAME_ID SEMICOLON
+    | LET r_type NAME_ID EQUAL r_base_expr SEMICOLON
+    ;
 
 //====function=================================================================
-r_function
-    : FUNCTION r_type r_identifier PARENTHESES_OPEN PARENTHESES_CLOSE SEMICOLON
-    | FUNCTION r_type r_identifier PARENTHESES_OPEN PARENTHESES_CLOSE SEMICOLON
+r_function_base
+    : FUNCTION r_type r_identifier PARENTHESES_OPEN PARENTHESES_CLOSE 
+    | FUNCTION r_type r_identifier PARENTHESES_OPEN r_parameter_list PARENTHESES_CLOSE 
+    ;
+
+r_function_statement
+    : r_function_base SEMICOLON
+    | r_function_base CURLY_BRACKETS_OPEN CURLY_BRACKETS_CLOSE
+    | r_function_base CURLY_BRACKETS_OPEN r_statement_list CURLY_BRACKETS_CLOSE
+    ;
 
 //====statement================================================================
 r_statement
     : r_let_statement
     | r_expr SEMICOLON
+    | r_function_statement
+    ;
+
+r_statement_list
+    : r_statement
+    | r_statement_list r_statement
     ;
 //====range====================================================================
 r_single_range
@@ -297,7 +337,6 @@ r_range
     : RANGE r_range_union
     ;
 
-
 //====type=====================================================================
 r_type
     : r_identifier
@@ -309,8 +348,11 @@ r_type
     ;
 
 
-//=============================================================================
-
+//====parameters===============================================================
+r_parameter_list
+    : r_type NAME_ID
+    | r_parameter_list COMMA r_type NAME_ID
+    ;
 
 //=============================================================================
 //=============================================================================
