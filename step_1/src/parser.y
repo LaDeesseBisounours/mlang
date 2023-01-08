@@ -174,106 +174,320 @@
 
 r_identifier
     : NAME_ID
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::IDENTIFIER);
+        res.pushContent($1);
+        $$ = res;
+    }
     | r_identifier COLON COLON NAME_ID
+    {
+        AST_Node* res = $$;
+        res->pushContent($4);
+        $$ = res;
+    }
     ;
 
 
 r_primary_expr
     : r_identifier
+    { $$ = $1; }
     | NUMBER
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::IDENTIFIER);
+        res.pushContent($1);
+        $$ = res;
+    }
     // | STRING_LITERAL
     ;
 
 r_parentheses_expr
     : r_primary_expr
+    { $$ = $1; }
     | PARENTHESES_OPEN r_expr PARENTHESES_CLOSE
+    { $$ = $2; }
     ;
 
 r_postfix_expr
     : r_parentheses_expr 
+    { $$ = $1; }
     | r_postfix_expr PARENTHESES_OPEN PARENTHESES_CLOSE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::POSTFIX_FUNCTION_CALL);
+        res->setLeft($1);
+        $$ = res;
+    }
     | r_postfix_expr PARENTHESES_OPEN r_expr_list PARENTHESES_CLOSE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::POSTFIX_FUNCTION_CALL);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     | r_postfix_expr BRACKETS_OPEN r_expr BRACKETS_CLOSE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::POSTFIX_ARRAY_DEREF);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     | r_postfix_expr DOT NAME_ID
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::POSTFIX_DOT);
+        res->setLeft($1);
+        res->pushContent($3);
+        $$ = res;
+    }
     | r_postfix_expr ARROW NAME_ID
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::POSTFIX_ARROW);
+        res->setLeft($1);
+        res->pushContent($3);
+        $$ = res;
+    }
     | r_postfix_expr INCREMENT
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::POSTFIX_INCREMENT);
+        res->setLeft($1);
+        $$ = res;
+    }
     | r_postfix_expr DECREMENT
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::POSTFIX_DECREMENT);
+        res->setLeft($1);
+        $$ = res;
+    }
     ;
 
 r_unary_base
     : r_postfix_expr
+    { $$ = $1; }
     | PLUS r_unary_base 
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::UNARY_BASE_PLUS);
+        res->setLeft($2);
+        $$ = res;
+    }
     | MINUS r_unary_base 
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::UNARY_BASE_MINUS);
+        res->setLeft($2);
+        $$ = res;
+    }
     | ABS r_unary_base
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::UNARY_BASE_ABS);
+        res->setLeft($2);
+        $$ = res;
+    }
     | BOOL_NOT r_unary_base
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::UNARY_BASE_BOOL_NOT);
+        res->setLeft($2);
+        $$ = res;
+    }
     ;
 
 r_unary_ref
     : r_unary_base
+    { $$ = $1; }
     | ASSIGN_REF  r_unary_ref
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::UNARY_REF_ASSIGN_REF);
+        res->setLeft($2);
+        $$ = res;
+    }
     | ASSIGN_DEREF r_unary_ref
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::UNARY_REF_ASSIGN_DEREF);
+        res->setLeft($2);
+        $$ = res;
+    }
     ;
 
 r_unary_ptr
     : r_unary_ref
+    { $$ = $1; }
     | ASSIGN_MOVE r_unary_ptr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::UNARY_PTR_MOVE);
+        res->setLeft($2);
+        $$ = res;
+    }
     | ASSIGN_COPY r_unary_ptr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::UNARY_PTR_COPY);
+        res->setLeft($2);
+        $$ = res;
+    }
     ;
 
 r_mult_expr
     : r_unary_ptr
+    { $$ = $1; }
     | r_mult_expr ASSIGN_DEREF r_unary_ptr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::MULT);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     | r_mult_expr DIVISION r_unary_ptr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::DIV);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     | r_mult_expr MOD r_unary_ptr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::MOD);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 r_add_expr
     : r_mult_expr
+    { $$ = $1; }
     | r_add_expr PLUS r_mult_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::PLUS);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     | r_add_expr MINUS r_mult_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::MINUS);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 r_doublearrow_expr
     : r_add_expr
+    { $$ = $1; }
     | r_doublearrow_expr DOUBLE_ARR_LEFT r_add_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::DOUBLEARROW_LEFT);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     | r_doublearrow_expr DOUBLE_ARR_RIGHT r_add_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::DOUBLEARROW_RIGHT);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 r_bool_ineq
     : r_doublearrow_expr 
+    { $$ = $1; }
     | r_bool_ineq BOOL_LT r_doublearrow_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_LT);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     | r_bool_ineq BOOL_LTE r_doublearrow_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_LTE);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     | r_bool_ineq BOOL_GT r_doublearrow_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_GT);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     | r_bool_ineq BOOL_GTE r_doublearrow_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_GTE);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 r_bool_and
     : r_bool_ineq
+    { $$ = $1; }
     | r_bool_and BOOL_AND r_bool_ineq
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_AND);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 r_bool_or
     : r_bool_and
+    { $$ = $1; }
     | r_bool_or BOOL_OR r_bool_and
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_OR);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 r_bool_eq
     : r_bool_or
+    { $$ = $1; }
     | r_bool_eq BOOL_EQ r_bool_or
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_EQ);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     | r_bool_eq BOOL_INEQ r_bool_or
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_INEQ);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 r_assignment_expr
     : r_unary_ref EQUAL r_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::ASSIGNMENT);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
+    ;
 
 r_expr
     : r_bool_eq
+    { $$ = $1; }
     | r_assignment_expr
+    { $$ = $1; }
     ;
 
 r_expr_list
     : r_expr
+    { $$ = $1; }
     | r_expr_list COMMA r_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::EXPR_LIST);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 //====let======================================================================
