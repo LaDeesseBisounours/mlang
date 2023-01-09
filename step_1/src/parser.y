@@ -494,57 +494,210 @@ r_expr_list
 
 r_let_statement
     : LET r_type NAME_ID SEMICOLON
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::LET_STATEMENT);
+        res->setLeft($2);
+        res->pushContent($3);
+        $$ = res;
+    }
     | LET r_type NAME_ID EQUAL r_expr SEMICOLON
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::LET_STATEMENT);
+        res->setLeft($2);
+        res->pushContent($3);
+        res->setRight($5);
+        $$ = res;
+    }
     ;
 
 //====function=================================================================
 r_function_base
     : FUNCTION r_type r_identifier PARENTHESES_OPEN PARENTHESES_CLOSE 
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::FUNCTION_PROTOTYPE);
+        res->setLeft($2);
+        res->setRight($3);
+        $$ = res;
+    }
     | FUNCTION r_type r_identifier PARENTHESES_OPEN r_parameter_list PARENTHESES_CLOSE 
+    {
+        AST_Node* resbase = new AST_Node(AST_Node::AST_Type::FUNCTION_PROTOTYPE);
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::FUNCTION_PROTOTYPE);
+        resbase->setLeft($2);
+        resbase->setRight($3);
+        res->setLeft(resbase);
+        res->setRight($5);
+        $$ = res;
+    }
     ;
 
 r_function_statement
     : r_function_base SEMICOLON
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::FUNCTION_STATEMENT);
+        res->setLeft($1);
+        $$ = res;
+    }
     | r_function_base CURLY_BRACKETS_OPEN CURLY_BRACKETS_CLOSE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::FUNCTION_STATEMENT);
+        res->setLeft($1);
+        $$ = res;
+    }
     | r_function_base CURLY_BRACKETS_OPEN r_statement_list CURLY_BRACKETS_CLOSE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::FUNCTION_STATEMENT);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 //====statement================================================================
 r_statement
     : r_let_statement
+    { $$ = $1; }
     | r_expr SEMICOLON
+    { $$ = $1; }
     | r_function_statement
+    { $$ = $1; }
     ;
 
 r_statement_list
     : r_statement
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::STATEMENT_LIST);
+        res->setLeft($1);
+        $$ = res;
+    }
     | r_statement_list r_statement
+    {
+        AST_Node* prev = $1;
+        if (prev->getRight() == nullptr)
+        {
+            prev->setRight($2);
+            $$ = prev;
+        }
+        else
+        {
+            AST_Node* res = new AST_Node(AST_Node::AST_Type::STATEMENT_LIST);
+            res->setLeft(prev);
+            res->setRight($2);
+            $$ = res;
+        }
+    }
     ;
 //====range====================================================================
 r_single_range
     : BRACKETS_CLOSE r_add_expr SEMICOLON r_add_expr BRACKETS_CLOSE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::SINGLE_RANGE);
+        res->setLeft($2);
+        res->setRight($4);
+        res->pushContent("]");
+        res->pushContent("]");
+        $$ = res;
+    }
     | BRACKETS_CLOSE r_add_expr SEMICOLON r_add_expr BRACKETS_OPEN
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::SINGLE_RANGE);
+        res->setLeft($2);
+        res->setRight($4);
+        res->pushContent("]");
+        res->pushContent("[");
+        $$ = res;
+    }
     | BRACKETS_OPEN r_add_expr SEMICOLON r_add_expr BRACKETS_CLOSE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::SINGLE_RANGE);
+        res->setLeft($2);
+        res->setRight($4);
+        res->pushContent("[");
+        res->pushContent("]");
+        $$ = res;
+    }
     | BRACKETS_OPEN r_add_expr SEMICOLON r_add_expr BRACKETS_OPEN
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::SINGLE_RANGE);
+        res->setLeft($2);
+        res->setRight($4);
+        res->pushContent("[");
+        res->pushContent("[");
+        $$ = res;
+    }
     //unbound
     | BRACKETS_CLOSE SEMICOLON r_add_expr BRACKETS_CLOSE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::SINGLE_RANGE);
+        res->setRight($3);
+        res->pushContent("]");
+        res->pushContent("]");
+        $$ = res;
+    }
     | BRACKETS_CLOSE SEMICOLON r_add_expr BRACKETS_OPEN
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::SINGLE_RANGE);
+        res->setRight($3);
+        res->pushContent("]");
+        res->pushContent("[");
+        $$ = res;
+    }
     | BRACKETS_CLOSE r_add_expr SEMICOLON BRACKETS_OPEN
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::SINGLE_RANGE);
+        res->setLeft($2);
+        res->pushContent("]");
+        res->pushContent("[");
+        $$ = res;
+    }
     | BRACKETS_OPEN r_add_expr SEMICOLON BRACKETS_OPEN
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::SINGLE_RANGE);
+        res->setLeft($2);
+        res->pushContent("[");
+        res->pushContent("[");
+        $$ = res;
+    }
+    ;
+
+r_range_parentheses
+    : r_single_range
+    { $$ = $1; }
+    | PARENTHESES_OPEN r_range_union PARENTHESES_CLOSE
+    { $$ = $2; }
     ;
 
 r_range_intersection
-    : r_single_range
+    : r_range_parentheses
+    { $$ = $1; }
     | r_range_intersection INTERSECTION r_single_range
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::RANGE_INTERSECTION);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 r_range_union
     : r_range_intersection
+    { $$ = $1; }
     | r_range_union UNION r_range_intersection
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::RANGE_UNION);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 r_range
     : RANGE r_range_union
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::RANGE);
+        res->setLeft($2);
+        $$ = res;
+    }
     ;
 
 //====type=====================================================================
