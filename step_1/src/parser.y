@@ -134,6 +134,7 @@
 %type<AST_Node*> r_parameter_list;
 %type<AST_Node*> r_type;
 %type<AST_Node*> r_range;
+%type<AST_Node*> r_range_parentheses;
 %type<AST_Node*> r_range_union;
 %type<AST_Node*> r_range_intersection;
 %type<AST_Node*> r_single_range;
@@ -703,18 +704,63 @@ r_range
 //====type=====================================================================
 r_type
     : r_identifier
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::TYPE);
+        res->setLeft($1);
+        $$ = res;
+    }
     | r_type ASSIGN_DEREF // * operator
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::TYPE_POINTER);
+        res->setLeft($1);
+        $$ = res;
+    }
     | r_type ASSIGN_REF
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::TYPE_REFERENCE);
+        res->setLeft($1);
+        $$ = res;
+    }
     | r_type BRACKETS_OPEN BRACKETS_CLOSE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::TYPE_ARRAY);
+        res->setLeft($1);
+        $$ = res;
+    }
     | r_type BRACKETS_OPEN NUMBER BRACKETS_CLOSE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::TYPE_ARRAY);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
     | r_type r_range
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::TYPE_RANGE);
+        res->setLeft($1);
+        res->setRight($2);
+        $$ = res;
+    }
     ;
 
 
 //====parameters===============================================================
 r_parameter_list
     : r_type NAME_ID
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::PARAMETER_LIST);
+        res->setLeft($1);
+        res->pushContent($2);
+        $$ = res;
+    }
     | r_parameter_list COMMA r_type NAME_ID
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::PARAMETER_LIST);
+        res->setLeft($1);
+        res->pushContent($4);
+        res->setRight($3);
+        $$ = res;
+    }
     ;
 
 //=============================================================================

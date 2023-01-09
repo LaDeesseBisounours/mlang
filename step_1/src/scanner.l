@@ -208,13 +208,8 @@ let         {
             }
 
 
-ref         {
-                cout << "Scanner: ''" << endl;
-                return ParserLayer::Parser::make_(ParserLayer::location());
-            }
 
-
-\+           {
+\+          {
                 cout << "Scanner: '+'" << endl;
                 return ParserLayer::Parser::make_PLUS(ParserLayer::location());
             }

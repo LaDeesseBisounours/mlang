@@ -83,14 +83,16 @@ public:
         PARAMETER_LIST,
         EXPR_LIST,
         FUNCTION_PROTOTYPE,
-        FUNCTION_PROTOTYPE,
         FUNCTION_STATEMENT,
         SINGLE_RANGE,
         RANGE_INTERSECTION,
         RANGE_UNION,
         RANGE,
-        TYPE_NP,
         TYPE,
+        TYPE_POINTER,
+        TYPE_REFERENCE,
+        TYPE_ARRAY,
+        TYPE_RANGE,
         STATEMENT,
         STATEMENT_LIST
     };
