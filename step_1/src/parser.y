@@ -177,7 +177,7 @@ r_identifier
     : NAME_ID
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::IDENTIFIER);
-        res.pushContent($1);
+        res->pushContent($1);
         $$ = res;
     }
     | r_identifier COLON COLON NAME_ID
@@ -195,7 +195,7 @@ r_primary_expr
     | NUMBER
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::IDENTIFIER);
-        res.pushContent($1);
+        res->pushContent($1);
         $$ = res;
     }
     // | STRING_LITERAL
@@ -353,14 +353,14 @@ r_add_expr
     { $$ = $1; }
     | r_add_expr PLUS r_mult_expr
     {
-        AST_Node* res = new AST_Node(AST_Node::AST_Type::PLUS);
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::ADD);
         res->setLeft($1);
         res->setRight($3);
         $$ = res;
     }
     | r_add_expr MINUS r_mult_expr
     {
-        AST_Node* res = new AST_Node(AST_Node::AST_Type::MINUS);
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::SUB);
         res->setLeft($1);
         res->setRight($3);
         $$ = res;
@@ -731,7 +731,7 @@ r_type
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::TYPE_ARRAY);
         res->setLeft($1);
-        res->setRight($3);
+        res->pushContent($3);
         $$ = res;
     }
     | r_type r_range
