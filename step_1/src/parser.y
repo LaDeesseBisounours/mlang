@@ -499,6 +499,7 @@ r_let_statement
         AST_Node* res = new AST_Node(AST_Node::AST_Type::LET_STATEMENT);
         res->setLeft($2);
         res->pushContent($3);
+        std::cout << " let " << *res << std::endl;
         $$ = res;
     }
     | LET r_type NAME_ID EQUAL r_expr SEMICOLON
@@ -507,6 +508,7 @@ r_let_statement
         res->setLeft($2);
         res->pushContent($3);
         res->setRight($5);
+        std::cout << " let " << *res << std::endl;
         $$ = res;
     }
     ;
@@ -569,21 +571,24 @@ r_statement_list
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::STATEMENT_LIST);
         res->setLeft($1);
+        std::cout << " statement " << *res << std::endl;
         $$ = res;
     }
     | r_statement_list r_statement
     {
         AST_Node* prev = $1;
+        AST_Node* next = $2;
+        std::cout << " statement " << *next << std::endl;
         if (prev->getRight() == nullptr)
         {
-            prev->setRight($2);
+            prev->setRight(next);
             $$ = prev;
         }
         else
         {
             AST_Node* res = new AST_Node(AST_Node::AST_Type::STATEMENT_LIST);
             res->setLeft(prev);
-            res->setRight($2);
+            res->setRight(next);
             $$ = res;
         }
     }

@@ -32,6 +32,7 @@
 #include <string>
 #include <vector>
 #include <variant>
+#include <iostream>
 #include <stdint.h>
 
 using namespace std;
@@ -111,6 +112,8 @@ public:
     AST_Node::AST_Type getType() const noexcept;
     vector<string>& getContent();
     void pushContent(std::string s);
+    friend ostream& operator<<(ostream& os, const AST_Node& node);
+    friend ostream& operator<<(ostream& os, const AST_Node::AST_Type& t);
     
 private:
     AST_Node::AST_Type _type;
@@ -118,6 +121,7 @@ private:
     AST_Node* _left;
     AST_Node* _right;
 };
+
 
 }
 

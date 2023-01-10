@@ -11,11 +11,12 @@ BOOST_AUTO_TEST_CASE(MyTestCase)
     ParserLayer::ParserHandler i;
     std::stringstream ss;
     
-    ss << "let Integer i = 0;";
+    ss << "let Integer i = 5 * 3 + 6 ;";
     i.switchInputStream(&ss);
 
     BOOST_CHECK(i.parse() == 0);
 }
+
 BOOST_AUTO_TEST_CASE(MyTestCase2)
 {
     ParserLayer::ParserHandler i;

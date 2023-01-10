@@ -67,6 +67,7 @@ void ParserHandler::switchInputStream(std::istream *is) {
 
 void ParserHandler::addAST_Node(const AST_Node &cmd)
 {
+    cout << cmd;
 }
 
 void ParserHandler::increaseLocation(unsigned int loc) {
