@@ -1,8 +1,0 @@
-decl function {
-    //propertie block
-}
-
-#property : ligne
-        { property_block }
-        ,
-        
