@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(ExpressionWithIdentifier)
     AST_Node* expected_ast = new AST_Node(AST_Node::AST_Type::ASSIGNMENT, {},
             new AST_Node(AST_Node::AST_Type::IDENTIFIER, {"i"}),
             new AST_Node(AST_Node::AST_Type::ADD, {},
-                new AST_Node(AST_Node::AST_Type::IDENTIFIER, {"s"}),
+                new AST_Node(AST_Node::AST_Type::NUMBER, {"5"}),
                 new AST_Node(AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {},
                     new AST_Node(AST_Node::AST_Type::IDENTIFIER, {"lele", "lol"}),
                     nullptr

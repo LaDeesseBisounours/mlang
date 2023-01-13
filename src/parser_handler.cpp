@@ -78,7 +78,6 @@ void ParserHandler::addAST_Node(AST_Node *node)
 
 void ParserHandler::increaseLocation(unsigned int loc) {
     m_location += loc;
-    cout << "increaseLocation(): " << loc << ", total = " << m_location << endl;
 }
 const std::vector<AST_Node*>& ParserHandler::get_generated_ast() const {
     return top_level_list;
