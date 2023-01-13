@@ -57,6 +57,7 @@ class ParserHandler
 {
 public:
     ParserHandler();
+    ~ParserHandler();
     
     /**
      * Run parser. Results are stored inside.

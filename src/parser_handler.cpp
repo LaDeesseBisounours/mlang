@@ -42,6 +42,12 @@ ParserHandler::ParserHandler() :
 
 }
 
+ParserHandler::~ParserHandler() {
+    for (AST_Node* node: top_level_list) {
+        delete node;
+    }
+}
+
 int ParserHandler::parse() {
     m_location = 0;
     return m_parser.parse();

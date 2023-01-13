@@ -65,7 +65,7 @@
     #include "location.hh"
     
     // yylex() arguments are defined in parser.y
-    static ParserLayer::Parser::symbol_type yylex(ParserLayer::Scanner &scanner, ParserLayer::ParserHandler &driver) {
+    static ParserLayer::Parser::symbol_type yylex(ParserLayer::Scanner &scanner, ParserLayer::ParserHandler &) {
         return scanner.get_next_token();
     }
     
@@ -499,7 +499,6 @@ r_let_statement
         AST_Node* res = new AST_Node(AST_Node::AST_Type::LET_STATEMENT);
         res->setLeft($2);
         res->pushContent($3);
-        std::cout << " let " << *res << std::endl;
         $$ = res;
     }
     | LET r_type NAME_ID EQUAL r_expr SEMICOLON
@@ -508,7 +507,6 @@ r_let_statement
         res->setLeft($2);
         res->pushContent($3);
         res->setRight($5);
-        std::cout << " let " << *res << std::endl;
         $$ = res;
     }
     ;
