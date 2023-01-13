@@ -62,28 +62,40 @@ AST_Node::AST_Node(AST_Node&& other)
     cout << "move constructor called" << endl;
 }
 
-AST_Node::AST_Node(AST_Node::AST_Type t, vector<string> &vec) :
+AST_Node::AST_Node(AST_Node::AST_Type t, vector<string> vec) :
     _type(t),
     _content(vec),
     _left(nullptr),
     _right(nullptr)
 {
-    cout << "common constructor called" << endl;
 }
 
 
+AST_Node::AST_Node(AST_Node::AST_Type t, const vector<string> vec, AST_Node* left, AST_Node* right) :
+    _type(t),
+    _content(vec),
+    _left(left),
+    _right(right)
+{ }
 
 AST_Node::~AST_Node()
 {
+    delete _left;
+    delete _right;
 }
 
 
 void AST_Node::setLeft(AST_Node *n) noexcept
 {
+    if (_left != nullptr)
+        delete _left;
+
     _left = n;
 }
 void AST_Node::setRight(AST_Node *n) noexcept
 {
+    if (_right != nullptr)
+        delete _right;
     _right = n;
 }
 AST_Node* AST_Node::getLeft(void) const noexcept
@@ -111,26 +123,27 @@ void AST_Node::pushContent(string s)
 
 }
     
-//std::ostream& operator<<(std::ostream& os, ParserLayer::AST_Node const& node){
-//
-//    os << " ( ";
-//    if (node.getLeft() != nullptr) {
-//        os << node.getLeft();
-//    //} else {
-//    //    os << " empty, ";
-//    }
-//    //os << node.getType();
-//    if (node.getRight() != nullptr) {
-//        os << node.getRight();
-//    //} else {
-//    //    os << ", empty ";
-//    }
-//    os << " ) ";
-//    return os;
-//}
-
 namespace ParserLayer
 {
+bool compare_pointers(const AST_Node* l, const AST_Node* r) {
+    if (l == nullptr) {
+        if (r == nullptr)
+            return true;
+        else
+            return false;
+    }
+    if (r == nullptr)
+        return false;
+
+    return *l == *r;
+}
+bool operator==(const AST_Node& lhs, const AST_Node& rhs) {
+    if (lhs._type != rhs._type)
+        return false;
+    if (lhs._content != rhs._content)
+        return false;
+    return compare_pointers(lhs._left, rhs._left) and compare_pointers(lhs._right, rhs._right);
+}
 ostream& operator<<(ostream& os, const AST_Node& node)
 {
     os << " ( ";

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 set(CMAKE_CXX_COMPILER "/usr/bin/g++")
+set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -pedantic -std=c++17")
 project(testparser VERSION 1.0 )
 
 find_package(FLEX 2.6 REQUIRED)

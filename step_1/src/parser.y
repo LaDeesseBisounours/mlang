@@ -161,7 +161,7 @@
 %type<AST_Node*> r_primary_expr;
 %type<AST_Node*> r_identifier;
 
-%start r_statement_list
+%start r_top_level_statement
 
 // operation order, each operation h
 // basic_expr
@@ -182,7 +182,7 @@ r_identifier
     }
     | r_identifier COLON COLON NAME_ID
     {
-        AST_Node* res = $$;
+        AST_Node* res = $1;
         res->pushContent($4);
         $$ = res;
     }
@@ -194,7 +194,7 @@ r_primary_expr
     { $$ = $1; }
     | NUMBER
     {
-        AST_Node* res = new AST_Node(AST_Node::AST_Type::IDENTIFIER);
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::NUMBER);
         res->pushContent($1);
         $$ = res;
     }
@@ -593,6 +593,16 @@ r_statement_list
         }
     }
     ;
+
+r_top_level_statement
+    : r_statement
+    {
+        driver.addAST_Node($1);
+    }
+    | r_top_level_statement r_statement
+    {
+        driver.addAST_Node($2);
+    }
 //====range====================================================================
 r_single_range
     : BRACKETS_CLOSE r_add_expr SEMICOLON r_add_expr BRACKETS_CLOSE

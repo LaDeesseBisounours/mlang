@@ -73,7 +73,12 @@ public:
      * Print AST
      */
     std::string str() const;
-    
+
+    /**
+     * Get AST
+     */
+    const std::vector<AST_Node*>& get_generated_ast() const;
+
     /**
      * Switch scanner input stream. Default is standard input (std::cin).
      * It will also reset AST.
@@ -89,7 +94,7 @@ public:
     
 private:
     // Used internally by Parser to insert AST nodes.
-    void addAST_Node(const AST_Node &cmd);
+    void addAST_Node(AST_Node *node);
     
     // Used internally by Scanner YY_USER_ACTION to update location indicator
     void increaseLocation(unsigned int loc);
@@ -100,7 +105,7 @@ private:
 private:
     Scanner m_scanner;
     Parser m_parser;
-    std::vector<AST_Node*> m_commands;  // Example AST
+    std::vector<AST_Node*> top_level_list;  // Example AST
     unsigned int m_location;          // Used by scanner
 };
 

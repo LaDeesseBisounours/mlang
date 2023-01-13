@@ -65,7 +65,7 @@
 
 
 
-[1-9][0-9]* {
+[0-9][0-9]* {
                 cout << "Scanner: decimal number: " << yytext << endl;
                 return ParserLayer::Parser::make_NUMBER(yytext, ParserLayer::location());
             }
@@ -104,7 +104,7 @@
 
 
 :           {
-                cout << "Scanner: ';'" << endl;
+                cout << "Scanner: ':'" << endl;
                 return ParserLayer::Parser::make_COLON(ParserLayer::location());
             }
 
@@ -206,7 +206,7 @@ let         {
                 cout << "Scanner: 'let'" << endl;
                 return ParserLayer::Parser::make_LET(ParserLayer::location());
             }
-
+                                    
 
 
 \+          {
