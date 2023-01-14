@@ -25,4 +25,6 @@ target_include_directories(ParserLayer PRIVATE "${PARSER_DIR}")
 target_include_directories(testparser PRIVATE "${PARSER_DIR}")
 target_link_libraries(testparser ParserLayer)
 
+enable_testing()
+
 add_subdirectory(test)
