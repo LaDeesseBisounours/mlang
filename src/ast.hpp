@@ -1,22 +1,20 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <variant>
 #include <iostream>
 #include <stdint.h>
+#include <string>
+#include <variant>
+#include <vector>
 
 using namespace std;
 namespace ParserLayer {
-
 
 /**
  * AST node. If you can call it AST at all...
  * It keeps function name and a list of arguments.
  */
-class AST_Node
-{
-public:
+class AST_Node {
+  public:
     enum class AST_Type {
         NUMBER,
         IDENTIFIER,
@@ -68,32 +66,33 @@ public:
         STATEMENT,
         STATEMENT_LIST
     };
-public:
+
+  public:
     AST_Node(AST_Type t);
     AST_Node(AST_Type t, vector<string> vec);
-    AST_Node(AST_Type t, const vector<string>vec, AST_Node* left, AST_Node* right);
-    AST_Node(AST_Node& other);
-    AST_Node(AST_Node&& other);
+    AST_Node(AST_Type t, const vector<string> vec, AST_Node *left,
+             AST_Node *right);
+    AST_Node(AST_Node &other);
+    AST_Node(AST_Node &&other);
     ~AST_Node();
-    
-    //accessors
+
+    // accessors
     void setLeft(AST_Node *n) noexcept;
     void setRight(AST_Node *n) noexcept;
-    AST_Node* getLeft() const noexcept;
-    AST_Node* getRight() const noexcept;
+    AST_Node *getLeft() const noexcept;
+    AST_Node *getRight() const noexcept;
     AST_Node::AST_Type getType() const noexcept;
-    vector<string>& getContent();
+    vector<string> &getContent();
     void pushContent(std::string s);
-    friend bool operator==(const AST_Node& lhs, const AST_Node& rhs);
-    friend ostream& operator<<(ostream& os, const AST_Node& node);
-    friend ostream& operator<<(ostream& os, const AST_Node::AST_Type& t);
-    
-private:
+    friend bool operator==(const AST_Node &lhs, const AST_Node &rhs);
+    friend ostream &operator<<(ostream &os, const AST_Node &node);
+    friend ostream &operator<<(ostream &os, const AST_Node::AST_Type &t);
+
+  private:
     AST_Node::AST_Type _type;
     vector<string> _content;
-    AST_Node* _left;
-    AST_Node* _right;
+    AST_Node *_left;
+    AST_Node *_right;
 };
 
-
-}
+} // namespace ParserLayer
