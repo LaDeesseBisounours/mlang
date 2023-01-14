@@ -10,7 +10,6 @@ BOOST_AUTO_TEST_SUITE(GrammarRules)
 
 BOOST_AUTO_TEST_CASE(NUMBER)
 {
-
     AST_Node* expected_ast = new AST_Node(AST_Node::AST_Type::NUMBE, {"5"});
 
     ParserLayer::ParserHandler i;

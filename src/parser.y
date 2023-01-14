@@ -591,14 +591,11 @@ r_statement_list
     ;
 
 r_top_level_statement
-    : r_statement
+    : r_statement_list
     {
-        driver.addAST_Node($1);
+        driver.setAST_Node($1);
     }
-    | r_top_level_statement r_statement
-    {
-        driver.addAST_Node($2);
-    }
+    ;
 //====range====================================================================
 r_single_range
     : BRACKETS_CLOSE r_add_expr SEMICOLON r_add_expr BRACKETS_CLOSE

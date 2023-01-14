@@ -11,17 +11,21 @@ BOOST_AUTO_TEST_CASE(TestSimpleLet) {
 
     ParserLayer::ParserHandler i;
     std::stringstream ss;
-    AST_Node *expected_ast = new AST_Node(
-        AST_Node::AST_Type::LET_STATEMENT, {"i"},
-        new AST_Node(AST_Node::AST_Type::TYPE, {},
-                     new AST_Node(AST_Node::AST_Type::IDENTIFIER, {"Integer"}),
-                     nullptr),
+    AST_Node* expected_ast = new AST_Node(
+        AST_Node::AST_Type::STATEMENT_LIST, {},
         new AST_Node(
-            AST_Node::AST_Type::ADD, {},
-            new AST_Node(AST_Node::AST_Type::MULT, {},
-                         new AST_Node(AST_Node::AST_Type::NUMBER, {"5"}),
-                         new AST_Node(AST_Node::AST_Type::NUMBER, {"3"})),
-            new AST_Node(AST_Node::AST_Type::NUMBER, {"6"})));
+            AST_Node::AST_Type::LET_STATEMENT, {"i"},
+            new AST_Node(
+                AST_Node::AST_Type::TYPE, {},
+                new AST_Node(AST_Node::AST_Type::IDENTIFIER, {"Integer"}),
+                nullptr),
+            new AST_Node(
+                AST_Node::AST_Type::ADD, {},
+                new AST_Node(AST_Node::AST_Type::MULT, {},
+                             new AST_Node(AST_Node::AST_Type::NUMBER, {"5"}),
+                             new AST_Node(AST_Node::AST_Type::NUMBER, {"3"})),
+                new AST_Node(AST_Node::AST_Type::NUMBER, {"6"}))),
+        nullptr);
 
     ss << "let Integer i = 5 * 3 + 6 ;";
     i.switchInputStream(&ss);
@@ -31,7 +35,7 @@ BOOST_AUTO_TEST_CASE(TestSimpleLet) {
     // std::endl; std::cout << "Parsed ===== " << std::endl <<
     // *i.get_generated_ast()[0] << std::endl;
 
-    BOOST_CHECK(*i.get_generated_ast()[0] == *expected_ast);
+    BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
     delete expected_ast;
 }
 
@@ -47,15 +51,19 @@ BOOST_AUTO_TEST_CASE(TestBadLet) {
 }
 
 BOOST_AUTO_TEST_CASE(ExpressionWithIdentifier) {
-    AST_Node *expected_ast = new AST_Node(
-        AST_Node::AST_Type::ASSIGNMENT, {},
-        new AST_Node(AST_Node::AST_Type::IDENTIFIER, {"i"}),
-        new AST_Node(AST_Node::AST_Type::ADD, {},
-                     new AST_Node(AST_Node::AST_Type::NUMBER, {"5"}),
-                     new AST_Node(AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {},
-                                  new AST_Node(AST_Node::AST_Type::IDENTIFIER,
-                                               {"lele", "lol"}),
-                                  nullptr)));
+    AST_Node* expected_ast = new AST_Node(
+        AST_Node::AST_Type::STATEMENT_LIST, {},
+        new AST_Node(
+            AST_Node::AST_Type::ASSIGNMENT, {},
+            new AST_Node(AST_Node::AST_Type::IDENTIFIER, {"i"}),
+            new AST_Node(
+                AST_Node::AST_Type::ADD, {},
+                new AST_Node(AST_Node::AST_Type::NUMBER, {"5"}),
+                new AST_Node(AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {},
+                             new AST_Node(AST_Node::AST_Type::IDENTIFIER,
+                                          {"lele", "lol"}),
+                             nullptr))),
+        nullptr);
     ParserLayer::ParserHandler i;
     std::stringstream ss;
 
@@ -63,7 +71,7 @@ BOOST_AUTO_TEST_CASE(ExpressionWithIdentifier) {
     i.switchInputStream(&ss);
 
     BOOST_CHECK(i.parse() == 0);
-    BOOST_CHECK(*i.get_generated_ast()[0] == *expected_ast);
+    BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
 }
 
 BOOST_AUTO_TEST_CASE(TestFunctionWithBody) {

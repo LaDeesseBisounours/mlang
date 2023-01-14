@@ -28,8 +28,8 @@ class ParserHandler {
   private:
     Scanner m_scanner;
     Parser m_parser;
-    std::vector<AST_Node *> top_level_list; // Example AST
-    unsigned int m_location;                // Used by scanner
+    AST_Node *top_level_ast; // Example AST
+    unsigned int m_location; // Used by scanner
 
   public:
     ParserHandler();
@@ -47,14 +47,9 @@ class ParserHandler {
     void clear();
 
     /**
-     * Print AST
-     */
-    std::string str() const;
-
-    /**
      * Get AST
      */
-    const std::vector<AST_Node *> &get_generated_ast() const;
+    const AST_Node *get_generated_ast() const;
 
     /**
      * Switch scanner input stream. Default is standard input (std::cin).
@@ -71,7 +66,7 @@ class ParserHandler {
 
   private:
     // Used internally by Parser to insert AST nodes.
-    void addAST_Node(AST_Node *node);
+    void setAST_Node(AST_Node *node);
 
     // Used internally by Scanner YY_USER_ACTION to update location indicator
     void increaseLocation(unsigned int loc);
