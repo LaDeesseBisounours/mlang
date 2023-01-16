@@ -171,9 +171,9 @@ BOOST_AUTO_TEST_CASE(POSTFIX_ARRAY_DEREF) {
 
         ss << "foo::bar[0]->lol.lel;";
         i.switchInputStream(&ss);
-
-        std::cout << *i.get_generated_ast() << std::endl;
+        std::cout << "value of ast " << i.get_generated_ast() << std::endl;
         BOOST_CHECK(i.parse() == 0);
+        std::cout << *i.get_generated_ast() << std::endl;
         BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
         delete expected_ast;
     }

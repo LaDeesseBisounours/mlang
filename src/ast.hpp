@@ -82,7 +82,7 @@ class AST_Node {
     AST_Node *getLeft() const noexcept;
     AST_Node *getRight() const noexcept;
     AST_Node::AST_Type getType() const noexcept;
-    vector<string> &getContent();
+    const vector<string> &getContent() const noexcept;
     void pushContent(std::string s);
     friend bool operator==(const AST_Node &lhs, const AST_Node &rhs);
     friend ostream &operator<<(ostream &os, const AST_Node &node);
