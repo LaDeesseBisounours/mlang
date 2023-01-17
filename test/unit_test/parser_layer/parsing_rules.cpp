@@ -401,10 +401,37 @@ BOOST_AUTO_TEST_CASE(UNARY_REF_ASSIGN_DEREF)
         delete expected_ast;
     }
 }
-// BOOST_AUTO_TEST_CASE(UNARY_PTR_MOVE)
-//{}
-// BOOST_AUTO_TEST_CASE(UNARY_PTR_COPY)
-//{}
+BOOST_AUTO_TEST_CASE(UNARY_PTR_MOVE)
+{
+    //TODO make test correct
+    //TODO add failed tests based on unary priority operators
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(AST_Node::AST_Type::UNARY_REF_ASSIGN_DEREF, {},
+                new AST_Node(
+                    AST_Node::AST_Type::POSTFIX_ARROW, {"lol"},
+                    new AST_Node(
+                        AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
+                        new AST_Node(AST_Node::AST_Type::IDENTIFIER,
+                                     {"foo", "bar"}),
+                        new AST_Node(AST_Node::AST_Type::NUMBER, {"0"})),
+                    nullptr),
+                nullptr),
+            nullptr);
+
+        ParserLayer::ParserHandler i;
+        std::stringstream ss;
+
+        ss << " *foo :: bar [ 0 ] -> lol ;";
+        i.switchInputStream(&ss);
+        BOOST_CHECK(i.parse() == 0);
+        BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
+        delete expected_ast;
+    }
+}
+BOOST_AUTO_TEST_CASE(UNARY_PTR_COPY)
+{}
 // BOOST_AUTO_TEST_CASE(MULT)
 //{}
 // BOOST_AUTO_TEST_CASE(DIV)
