@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(POSTFIX_ARRAY_DEREF) {
                     new AST_Node(
                         AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
                         new AST_Node(AST_Node::AST_Type::IDENTIFIER,
-                                        {"foo", "bar"}),
+                                     {"foo", "bar"}),
                         new AST_Node(AST_Node::AST_Type::NUMBER, {"0"})),
                     nullptr),
                 nullptr),
@@ -171,32 +171,236 @@ BOOST_AUTO_TEST_CASE(POSTFIX_ARRAY_DEREF) {
 
         ss << "foo::bar[0]->lol.lel;";
         i.switchInputStream(&ss);
-        std::cout << "value of ast " << i.get_generated_ast() << std::endl;
         BOOST_CHECK(i.parse() == 0);
-        std::cout << "expected " << std::endl;
-        std::cout << *expected_ast << std::endl;
-        std::cout << "parsed " << std::endl;
-        std::cout << *i.get_generated_ast() << std::endl;
         BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
         delete expected_ast;
     }
 }
-// BOOST_AUTO_TEST_CASE(POSTFIX_INCREMENT)
-//{}
-// BOOST_AUTO_TEST_CASE(POSTFIX_DECREMENT)
-//{}
-// BOOST_AUTO_TEST_CASE(UNARY_BASE_PLUS)
-//{}
-// BOOST_AUTO_TEST_CASE(UNARY_BASE_MINUS)
-//{}
-// BOOST_AUTO_TEST_CASE(UNARY_BASE_ABS)
-//{}
-// BOOST_AUTO_TEST_CASE(UNARY_BASE_BOOL_NOT)
-//{}
-// BOOST_AUTO_TEST_CASE(UNARY_REF_ASSIGN_REF)
-//{}
-// BOOST_AUTO_TEST_CASE(UNARY_REF_ASSIGN_DEREF)
-//{}
+BOOST_AUTO_TEST_CASE(POSTFIX_INCREMENT) {
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(
+                AST_Node::AST_Type::POSTFIX_INCREMENT, {},
+                new AST_Node(
+                    AST_Node::AST_Type::POSTFIX_DOT, {"lel"},
+                    new AST_Node(
+                        AST_Node::AST_Type::POSTFIX_ARROW, {"lol"},
+                        new AST_Node(
+                            AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
+                            new AST_Node(AST_Node::AST_Type::IDENTIFIER,
+                                         {"foo", "bar"}),
+                            new AST_Node(AST_Node::AST_Type::NUMBER, {"0"})),
+                        nullptr),
+                    nullptr),
+                nullptr),
+            nullptr);
+
+        ParserLayer::ParserHandler i;
+        std::stringstream ss;
+
+        ss << "foo::bar[0]->lol.lel++;";
+        i.switchInputStream(&ss);
+        BOOST_CHECK(i.parse() == 0);
+        BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
+        delete expected_ast;
+    }
+}
+BOOST_AUTO_TEST_CASE(POSTFIX_DECREMENT) {
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(
+                AST_Node::AST_Type::POSTFIX_DECREMENT, {},
+                new AST_Node(
+                    AST_Node::AST_Type::POSTFIX_DOT, {"lel"},
+                    new AST_Node(
+                        AST_Node::AST_Type::POSTFIX_DECREMENT, {},
+                        new AST_Node(
+                            AST_Node::AST_Type::POSTFIX_ARROW, {"lol"},
+                            new AST_Node(
+                                AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
+                                new AST_Node(AST_Node::AST_Type::IDENTIFIER,
+                                             {"foo", "bar"}),
+                                new AST_Node(AST_Node::AST_Type::NUMBER,
+                                             {"0"})),
+                            nullptr),
+                        nullptr),
+                    nullptr),
+                nullptr),
+            nullptr);
+
+        ParserLayer::ParserHandler i;
+        std::stringstream ss;
+
+        ss << "foo::bar[0]->lol--.lel--;";
+        i.switchInputStream(&ss);
+        BOOST_CHECK(i.parse() == 0);
+        BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
+        delete expected_ast;
+    }
+}
+BOOST_AUTO_TEST_CASE(UNARY_BASE_PLUS) {
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(AST_Node::AST_Type::UNARY_BASE_PLUS, {},
+                new AST_Node(
+                    AST_Node::AST_Type::POSTFIX_ARROW, {"lol"},
+                    new AST_Node(
+                        AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
+                        new AST_Node(AST_Node::AST_Type::IDENTIFIER,
+                                     {"foo", "bar"}),
+                        new AST_Node(AST_Node::AST_Type::NUMBER, {"0"})),
+                    nullptr),
+                nullptr),
+            nullptr);
+
+        ParserLayer::ParserHandler i;
+        std::stringstream ss;
+
+        ss << "+foo::bar[0]->lol;";
+        i.switchInputStream(&ss);
+        BOOST_CHECK(i.parse() == 0);
+        BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
+        delete expected_ast;
+    }
+}
+ BOOST_AUTO_TEST_CASE(UNARY_BASE_MINUS)
+{
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(AST_Node::AST_Type::UNARY_BASE_MINUS, {},
+                new AST_Node(
+                    AST_Node::AST_Type::POSTFIX_ARROW, {"lol"},
+                    new AST_Node(
+                        AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
+                        new AST_Node(AST_Node::AST_Type::IDENTIFIER,
+                                     {"foo", "bar"}),
+                        new AST_Node(AST_Node::AST_Type::NUMBER, {"0"})),
+                    nullptr),
+                nullptr),
+            nullptr);
+
+        ParserLayer::ParserHandler i;
+        std::stringstream ss;
+
+        ss << "-foo::bar[0]->lol;";
+        i.switchInputStream(&ss);
+        BOOST_CHECK(i.parse() == 0);
+        BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
+        delete expected_ast;
+    }
+}
+ BOOST_AUTO_TEST_CASE(UNARY_BASE_ABS)
+{    
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(AST_Node::AST_Type::UNARY_BASE_ABS, {},
+                new AST_Node(
+                    AST_Node::AST_Type::POSTFIX_ARROW, {"lol"},
+                    new AST_Node(
+                        AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
+                        new AST_Node(AST_Node::AST_Type::IDENTIFIER,
+                                     {"foo", "bar"}),
+                        new AST_Node(AST_Node::AST_Type::NUMBER, {"0"})),
+                    nullptr),
+                nullptr),
+            nullptr);
+
+        ParserLayer::ParserHandler i;
+        std::stringstream ss;
+
+        ss << "abs foo::bar[0]->lol;";
+        i.switchInputStream(&ss);
+        BOOST_CHECK(i.parse() == 0);
+        BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
+        delete expected_ast;
+    }
+}
+BOOST_AUTO_TEST_CASE(UNARY_BASE_BOOL_NOT)
+{
+     {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(AST_Node::AST_Type::UNARY_BASE_BOOL_NOT, {},
+                new AST_Node(
+                    AST_Node::AST_Type::POSTFIX_ARROW, {"lol"},
+                    new AST_Node(
+                        AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
+                        new AST_Node(AST_Node::AST_Type::IDENTIFIER,
+                                     {"foo", "bar"}),
+                        new AST_Node(AST_Node::AST_Type::NUMBER, {"0"})),
+                    nullptr),
+                nullptr),
+            nullptr);
+
+        ParserLayer::ParserHandler i;
+        std::stringstream ss;
+
+        ss << "not foo::bar[0]->lol;";
+        i.switchInputStream(&ss);
+        BOOST_CHECK(i.parse() == 0);
+        BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
+        delete expected_ast;
+    }
+}
+BOOST_AUTO_TEST_CASE(UNARY_REF_ASSIGN_REF)
+{     
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(AST_Node::AST_Type::UNARY_REF_ASSIGN_REF, {},
+                new AST_Node(
+                    AST_Node::AST_Type::POSTFIX_ARROW, {"lol"},
+                    new AST_Node(
+                        AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
+                        new AST_Node(AST_Node::AST_Type::IDENTIFIER,
+                                     {"foo", "bar"}),
+                        new AST_Node(AST_Node::AST_Type::NUMBER, {"0"})),
+                    nullptr),
+                nullptr),
+            nullptr);
+
+        ParserLayer::ParserHandler i;
+        std::stringstream ss;
+
+        ss << " &foo :: bar [ 0 ] -> lol ;";
+        i.switchInputStream(&ss);
+        BOOST_CHECK(i.parse() == 0);
+        BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
+        delete expected_ast;
+    }
+}
+BOOST_AUTO_TEST_CASE(UNARY_REF_ASSIGN_DEREF)
+{
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(AST_Node::AST_Type::UNARY_REF_ASSIGN_DEREF, {},
+                new AST_Node(
+                    AST_Node::AST_Type::POSTFIX_ARROW, {"lol"},
+                    new AST_Node(
+                        AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
+                        new AST_Node(AST_Node::AST_Type::IDENTIFIER,
+                                     {"foo", "bar"}),
+                        new AST_Node(AST_Node::AST_Type::NUMBER, {"0"})),
+                    nullptr),
+                nullptr),
+            nullptr);
+
+        ParserLayer::ParserHandler i;
+        std::stringstream ss;
+
+        ss << " *foo :: bar [ 0 ] -> lol ;";
+        i.switchInputStream(&ss);
+        BOOST_CHECK(i.parse() == 0);
+        BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
+        delete expected_ast;
+    }
+}
 // BOOST_AUTO_TEST_CASE(UNARY_PTR_MOVE)
 //{}
 // BOOST_AUTO_TEST_CASE(UNARY_PTR_COPY)
