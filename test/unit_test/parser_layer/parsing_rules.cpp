@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(POSTFIX_ARRAY_DEREF) {
             new AST_Node(
                 AST_Node::AST_Type::POSTFIX_DOT, {"lel"},
                 new AST_Node(
-                    AST_Node::AST_Type::POSTFIX_DOT, {"lol"},
+                    AST_Node::AST_Type::POSTFIX_ARROW, {"lol"},
                     new AST_Node(
                         AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
                         new AST_Node(AST_Node::AST_Type::IDENTIFIER,
@@ -173,6 +173,9 @@ BOOST_AUTO_TEST_CASE(POSTFIX_ARRAY_DEREF) {
         i.switchInputStream(&ss);
         std::cout << "value of ast " << i.get_generated_ast() << std::endl;
         BOOST_CHECK(i.parse() == 0);
+        std::cout << "expected " << std::endl;
+        std::cout << *expected_ast << std::endl;
+        std::cout << "parsed " << std::endl;
         std::cout << *i.get_generated_ast() << std::endl;
         BOOST_CHECK(*i.get_generated_ast() == *expected_ast);
         delete expected_ast;

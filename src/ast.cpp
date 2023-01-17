@@ -91,7 +91,7 @@ void printAST(std::ostream& os, const std::string& prefix, const AST_Node* node,
         os << (isLeft ? "├──" : "└──" );
 
         // print the value of the node
-        os << "└──" << node->getType();
+        os << node->getType();
         if (node->getContent().empty()) {
              os << endl;
         } else {
@@ -103,8 +103,9 @@ void printAST(std::ostream& os, const std::string& prefix, const AST_Node* node,
         }
 
         // enter the next tree level - left and right branch
-        printAST(os, prefix + (isLeft ? "│   " : "    "), node->getLeft(), true);
-        printAST(os, prefix + (isLeft ? "│   " : "    "), node->getRight(), false);
+
+        printAST(os, prefix +  "    ", node->getLeft(), true);
+        printAST(os, prefix +  "    ", node->getRight(), false);
     }
 }
 
@@ -132,18 +133,8 @@ namespace ParserLayer {
             compare_pointers(lhs._right, rhs._right);
     }
     ostream &operator<<(ostream &os, const AST_Node &node) {
-        os << "└──" << node.getType();
-        if (node.getContent().empty()) {
-             os << endl;
-        } else {
-            os << "=";
-            for (auto& str : node.getContent()) {
-                os << str << ",";
-            }
-            os << endl;
-        }
-        printAST(os, "", node.getLeft(), true);
-        printAST(os, "", node.getRight(), false);
+
+        printAST(os, "", &node, false);
         return os;
     }
 
