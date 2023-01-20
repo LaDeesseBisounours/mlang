@@ -741,8 +741,7 @@ BOOST_AUTO_TEST_CASE( SUB ) {
                             nullptr ),
                         nullptr ),
                     new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ) ),
-                new AST_Node( AST_Node::AST_Type::NUMBER, { "8" } )
-                ),
+                new AST_Node( AST_Node::AST_Type::NUMBER, { "8" } ) ),
             nullptr );
 
         ParserLayer::ParserHandler i;
@@ -754,11 +753,43 @@ BOOST_AUTO_TEST_CASE( SUB ) {
         BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
         delete expected_ast;
     }
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(
+                AST_Node::AST_Type::SUB, {},
+                new AST_Node( AST_Node::AST_Type::NUMBER, { "8" } ),
+                new AST_Node(
+                    AST_Node::AST_Type::MULT, {},
+                    new AST_Node(
+                        AST_Node::AST_Type::UNARY_BASE_MINUS, {},
+                        new AST_Node(
+                            AST_Node::AST_Type::POSTFIX_ARROW, { "lol" },
+                            new AST_Node(
+                                AST_Node::AST_Type::POSTFIX_ARRAY_DEREF, {},
+                                new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                              { "foo", "bar" } ),
+                                new AST_Node( AST_Node::AST_Type::NUMBER,
+                                              { "0" } ) ),
+                            nullptr ),
+                        nullptr ),
+                    new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ) ) ),
+            nullptr );
+
+        ParserLayer::ParserHandler i;
+        std::stringstream ss;
+
+        ss << "8 - -foo::bar[0]->lol * i;";
+        i.switchInputStream( &ss );
+        BOOST_CHECK( i.parse() == 0 );
+        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        delete expected_ast;
+    }
 }
-// BOOST_AUTO_TEST_CASE(DOUBLEARROW_LEFT)
-//{}
-// BOOST_AUTO_TEST_CASE(DOUBLEARROW_RIGHT)
-//{}
+BOOST_AUTO_TEST_CASE(DOUBLEARROW_LEFT)
+{}
+BOOST_AUTO_TEST_CASE(DOUBLEARROW_RIGHT)
+{}
 // BOOST_AUTO_TEST_CASE(BOOL_LT)
 //{}
 // BOOST_AUTO_TEST_CASE(BOOL_LTE)
