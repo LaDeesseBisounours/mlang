@@ -5,6 +5,43 @@
 #include <boost/test/unit_test.hpp>
 using namespace ParserLayer;
 
+class AST_Tester {
+    ParserLayer::ParserHandler _ph;
+    const AST_Node* _expected_ast;
+    std::stringstream _ss;
+    public:
+    enum class EXPECTED {
+        FAILURE,
+        SUCCESS
+    };
+    AST_Tester(const char* to_parse, const AST_Node* expected_ast) {
+        _ss << to_parse;
+        _ph.switchInputStream(&_ss);
+        _expected_ast = expected_ast;
+    }
+    ~AST_Tester() {
+        if (_expected_ast != nullptr) {
+            delete _expected_ast;
+        }
+    }
+
+    void operator()(EXPECTED e) {
+        if (e == EXPECTED::FAILURE) {
+            BOOST_CHECK( _ph.parse() != 0 );
+            BOOST_CHECK(_ph.get_generated_ast() == nullptr);
+                BOOST_CHECK(_expected_ast == nullptr);
+        } else {
+            BOOST_CHECK( _ph.parse() == 0 );
+            if (_expected_ast == nullptr or _ph.get_generated_ast() == nullptr) {
+                BOOST_CHECK(_expected_ast == nullptr);
+                BOOST_CHECK(_ph.get_generated_ast() == nullptr);
+            } else {
+                BOOST_CHECK( *_ph.get_generated_ast() == *_expected_ast );
+            }
+        }
+    }
+};
+
 BOOST_AUTO_TEST_SUITE( GrammarRules )
 
 
@@ -13,15 +50,7 @@ BOOST_AUTO_TEST_CASE( NUMBER ) {
         AST_Node::AST_Type::STATEMENT_LIST, {},
         new AST_Node( AST_Node::AST_Type::NUMBER, { "5" } ), nullptr );
 
-    ParserLayer::ParserHandler i;
-    std::stringstream ss;
-
-    ss << "5;";
-    i.switchInputStream( &ss );
-
-    BOOST_CHECK( i.parse() == 0 );
-    BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-    delete expected_ast;
+    AST_Tester( "5;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
 }
 
 BOOST_AUTO_TEST_CASE( IDENTIFIER ) {
@@ -30,15 +59,15 @@ BOOST_AUTO_TEST_CASE( IDENTIFIER ) {
             AST_Node::AST_Type::STATEMENT_LIST, {},
             new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ), nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "i;";
-        i.switchInputStream( &ss );
+        AST_Tester( "i;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
 
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        ////BOOST_CHECK( i.parse() == 0 );
+        ////BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
     {
         AST_Node* expected_ast =
@@ -47,15 +76,15 @@ BOOST_AUTO_TEST_CASE( IDENTIFIER ) {
                                         { "lel", "lol", "lul", "__wtf" } ),
                           nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "lel::lol::lul::__wtf;";
-        i.switchInputStream( &ss );
+        AST_Tester( "lel::lol::lul::__wtf;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
 
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        ////BOOST_CHECK( i.parse() == 0 );
+        ////BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 
@@ -69,15 +98,15 @@ BOOST_AUTO_TEST_CASE( POSTFIX_FUNCTION_CALL ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "fun();";
-        i.switchInputStream( &ss );
+        AST_Tester( "fun();", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
 
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        ////BOOST_CHECK( i.parse() == 0 );
+        ////BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
     {
         AST_Node* expected_ast = new AST_Node(
@@ -89,15 +118,15 @@ BOOST_AUTO_TEST_CASE( POSTFIX_FUNCTION_CALL ) {
                 new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "somevar" } ) ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "foo::bar::fun(somevar);";
-        i.switchInputStream( &ss );
+        AST_Tester( "foo::bar::fun(somevar);", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
 
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        ////BOOST_CHECK( i.parse() == 0 );
+        ////BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 
@@ -114,15 +143,15 @@ BOOST_AUTO_TEST_CASE( POSTFIX_ARROW ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "foo::bar->lol->lel;";
-        i.switchInputStream( &ss );
+        AST_Tester( "foo::bar->lol->lel;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
 
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        ////BOOST_CHECK( i.parse() == 0 );
+        ////BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 
@@ -139,15 +168,15 @@ BOOST_AUTO_TEST_CASE( POSTFIX_DOT ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "foo::bar.lol.lel;";
-        i.switchInputStream( &ss );
+        AST_Tester( "foo::bar.lol.lel;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
 
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        ////BOOST_CHECK( i.parse() == 0 );
+        ////BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( POSTFIX_ARRAY_DEREF ) {
@@ -167,14 +196,14 @@ BOOST_AUTO_TEST_CASE( POSTFIX_ARRAY_DEREF ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "foo::bar[0]->lol.lel;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "foo::bar[0]->lol.lel;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( POSTFIX_INCREMENT ) {
@@ -198,14 +227,14 @@ BOOST_AUTO_TEST_CASE( POSTFIX_INCREMENT ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "foo::bar[0]->lol.lel++;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "foo::bar[0]->lol.lel++;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( POSTFIX_DECREMENT ) {
@@ -232,14 +261,14 @@ BOOST_AUTO_TEST_CASE( POSTFIX_DECREMENT ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "foo::bar[0]->lol--.lel--;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "foo::bar[0]->lol--.lel--;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( UNARY_BASE_PLUS ) {
@@ -259,14 +288,14 @@ BOOST_AUTO_TEST_CASE( UNARY_BASE_PLUS ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "+ foo::bar[0]->lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "+ foo::bar[0]->lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( UNARY_BASE_MINUS ) {
@@ -286,14 +315,14 @@ BOOST_AUTO_TEST_CASE( UNARY_BASE_MINUS ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        //////std::stringstream ss;
 
-        ss << "-foo::bar[0]->lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "-foo::bar[0]->lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( UNARY_BASE_ABS ) {
@@ -313,14 +342,14 @@ BOOST_AUTO_TEST_CASE( UNARY_BASE_ABS ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "abs foo::bar[0]->lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "abs foo::bar[0]->lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( UNARY_BASE_BOOL_NOT ) {
@@ -340,14 +369,14 @@ BOOST_AUTO_TEST_CASE( UNARY_BASE_BOOL_NOT ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "not foo::bar[0]->lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "not foo::bar[0]->lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( UNARY_REF_ASSIGN_REF ) {
@@ -367,14 +396,14 @@ BOOST_AUTO_TEST_CASE( UNARY_REF_ASSIGN_REF ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << " &foo :: bar [ 0 ] -> lol ;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( " &foo :: bar [ 0 ] -> lol ;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( UNARY_REF_ASSIGN_DEREF ) {
@@ -394,14 +423,14 @@ BOOST_AUTO_TEST_CASE( UNARY_REF_ASSIGN_DEREF ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << " *foo :: bar [ 0 ] -> lol ;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( " *foo :: bar [ 0 ] -> lol ;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( UNARY_PTR_MOVE ) {
@@ -423,14 +452,14 @@ BOOST_AUTO_TEST_CASE( UNARY_PTR_MOVE ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << " move foo :: bar [ 0 ] -> lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( " move foo :: bar [ 0 ] -> lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
     {
         AST_Node* expected_ast = new AST_Node(
@@ -452,22 +481,22 @@ BOOST_AUTO_TEST_CASE( UNARY_PTR_MOVE ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << " move & foo :: bar [ 0 ] -> lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( " move & foo :: bar [ 0 ] -> lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
     {
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << " & move foo :: bar [ 0 ] -> lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() != 0 );
+        AST_Tester( " & move foo :: bar [ 0 ] -> lol;", nullptr)(AST_Tester::EXPECTED::FAILURE);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() != 0 );
     }
 }
 BOOST_AUTO_TEST_CASE( UNARY_PTR_COPY ) {
@@ -487,22 +516,22 @@ BOOST_AUTO_TEST_CASE( UNARY_PTR_COPY ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "copy foo :: bar [ 0 ] -> lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "copy foo :: bar [ 0 ] -> lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
     {
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        ////std::stringstream ss;
 
-        ss << "* copy foo :: bar [ 0 ] -> lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() != 0 );
+        AST_Tester( "* copy foo :: bar [ 0 ] -> lol;", nullptr)(AST_Tester::EXPECTED::FAILURE);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() != 0 );
     }
 
     {
@@ -525,14 +554,14 @@ BOOST_AUTO_TEST_CASE( UNARY_PTR_COPY ) {
                 nullptr ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        //std::stringstream ss;
 
-        ss << "copy *foo::bar[0]->lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "copy *foo::bar[0]->lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( MULT ) {
@@ -556,14 +585,14 @@ BOOST_AUTO_TEST_CASE( MULT ) {
                     nullptr ) ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        //std::stringstream ss;
 
-        ss << "8 * *foo::bar[0]->lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "8 * *foo::bar[0]->lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( DIV ) {
@@ -587,14 +616,14 @@ BOOST_AUTO_TEST_CASE( DIV ) {
                     nullptr ) ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        //std::stringstream ss;
 
-        ss << "8 / *foo::bar[0]->lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "8 / *foo::bar[0]->lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( MOD ) {
@@ -618,14 +647,14 @@ BOOST_AUTO_TEST_CASE( MOD ) {
                     nullptr ) ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        //std::stringstream ss;
 
-        ss << "8 % *foo::bar[0]->lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "8 % *foo::bar[0]->lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( ADD ) {
@@ -649,14 +678,14 @@ BOOST_AUTO_TEST_CASE( ADD ) {
                     nullptr ) ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        //std::stringstream ss;
 
-        ss << "8 + +foo::bar[0]->lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "8 + +foo::bar[0]->lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
     {
         AST_Node* expected_ast = new AST_Node(
@@ -681,14 +710,14 @@ BOOST_AUTO_TEST_CASE( ADD ) {
                     new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ) ) ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        //std::stringstream ss;
 
-        ss << "8 + +foo::bar[0]->lol * i;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "8 + +foo::bar[0]->lol * i;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE( SUB ) {
@@ -712,14 +741,14 @@ BOOST_AUTO_TEST_CASE( SUB ) {
                     nullptr ) ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        //std::stringstream ss;
 
-        ss << "8 - -foo::bar[0]->lol;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "8 - -foo::bar[0]->lol;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
     {
         AST_Node* expected_ast = new AST_Node(
@@ -744,14 +773,14 @@ BOOST_AUTO_TEST_CASE( SUB ) {
                 new AST_Node( AST_Node::AST_Type::NUMBER, { "8" } ) ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        //std::stringstream ss;
 
-        ss << "-foo::bar[0]->lol * i - 8 ;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "-foo::bar[0]->lol * i - 8 ;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
     {
         AST_Node* expected_ast = new AST_Node(
@@ -776,14 +805,14 @@ BOOST_AUTO_TEST_CASE( SUB ) {
                     new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ) ) ),
             nullptr );
 
-        ParserLayer::ParserHandler i;
-        std::stringstream ss;
+        ////ParserLayer::ParserHandler i;
+        //std::stringstream ss;
 
-        ss << "8 - -foo::bar[0]->lol * i;";
-        i.switchInputStream( &ss );
-        BOOST_CHECK( i.parse() == 0 );
-        BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
-        delete expected_ast;
+        AST_Tester( "8 - -foo::bar[0]->lol * i;", expected_ast)(AST_Tester::EXPECTED::SUCCESS);
+        //i.switchInputStream( &ss );
+        //BOOST_CHECK( i.parse() == 0 );
+        //BOOST_CHECK( *i.get_generated_ast() == *expected_ast );
+        //delete expected_ast;
     }
 }
 BOOST_AUTO_TEST_CASE(DOUBLEARROW_LEFT)
