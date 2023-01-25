@@ -6,7 +6,7 @@
 using namespace ParserLayer;
 using namespace std;
 
-int main(int argc, char **argv) {
+int main(void) {
     ParserHandler i;
     int res = i.parse();
     cout << "Parse complete. Result = " << res << endl;

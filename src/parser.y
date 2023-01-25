@@ -367,27 +367,9 @@ r_add_expr
     }
     ;
 
-r_doublearrow_expr
-    : r_add_expr
-    { $$ = $1; }
-    | r_doublearrow_expr DOUBLE_ARR_LEFT r_add_expr
-    {
-        AST_Node* res = new AST_Node(AST_Node::AST_Type::DOUBLEARROW_LEFT);
-        res->setLeft($1);
-        res->setRight($3);
-        $$ = res;
-    }
-    | r_doublearrow_expr DOUBLE_ARR_RIGHT r_add_expr
-    {
-        AST_Node* res = new AST_Node(AST_Node::AST_Type::DOUBLEARROW_RIGHT);
-        res->setLeft($1);
-        res->setRight($3);
-        $$ = res;
-    }
-    ;
 
 r_bool_ineq
-    : r_doublearrow_expr 
+    : r_add_expr 
     { $$ = $1; }
     | r_bool_ineq BOOL_LT r_doublearrow_expr
     {
@@ -461,6 +443,24 @@ r_bool_eq
         $$ = res;
     }
     ;
+r_doublearrow_expr
+    : r_bool_eq
+    { $$ = $1; }
+    | r_doublearrow_expr DOUBLE_ARR_LEFT r_add_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::DOUBLEARROW_LEFT);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
+    | r_doublearrow_expr DOUBLE_ARR_RIGHT r_add_expr
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::DOUBLEARROW_RIGHT);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
+    ;
 
 r_assignment_expr
     : r_unary_ref EQUAL r_expr
@@ -473,7 +473,7 @@ r_assignment_expr
     ;
 
 r_expr
-    : r_bool_eq
+    : r_doublearrow_expr
     { $$ = $1; }
     | r_assignment_expr
     { $$ = $1; }
@@ -783,7 +783,7 @@ r_parameter_list
 %%
 
 // Bison expects us to provide implementation - otherwise linker complains
-void ParserLayer::Parser::error(const location &loc , const std::string &message) {
+void ParserLayer::Parser::error(const location & , const std::string &message) {
         
         // Location should be initialized inside scanner action, but is not in this example.
         // Let's grab location directly from driver class.
