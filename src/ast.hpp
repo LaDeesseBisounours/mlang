@@ -16,6 +16,8 @@ namespace ParserLayer {
 class AST_Node {
   public:
     enum class AST_Type {
+        TRUE,
+        FALSE,
         NUMBER,
         IDENTIFIER,
         POSTFIX_FUNCTION_CALL,

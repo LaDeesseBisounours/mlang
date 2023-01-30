@@ -137,6 +137,12 @@
                 return ParserLayer::Parser::make_DECREMENT(ParserLayer::location());
             }
 
+true        {
+                return ParserLayer::Parser::make_TRUE(ParserLayer::location());
+            }
+false       {
+                return ParserLayer::Parser::make_FALSE(ParserLayer::location());
+            }
 
 not         {
                 //cout << "Scanner: 'not'" << endl;

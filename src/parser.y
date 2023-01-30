@@ -98,6 +98,8 @@
 %token END 0 "end of file"
 %token <std::string> NAME_ID  "string";
 %token <std::string> NUMBER "number"; //string and we parse it later
+%token TRUE;
+%token FALSE;
 
 %token PARENTHESES_OPEN PARENTHESES_CLOSE
 %token BRACKETS_OPEN BRACKETS_CLOSE
@@ -196,6 +198,16 @@ r_primary_expr
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::NUMBER);
         res->pushContent($1);
+        $$ = res;
+    }
+    | TRUE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::TRUE);
+        $$ = res;
+    }
+    | FALSE
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::FALSE);
         $$ = res;
     }
     // | STRING_LITERAL
@@ -371,28 +383,28 @@ r_add_expr
 r_bool_ineq
     : r_add_expr 
     { $$ = $1; }
-    | r_bool_ineq BOOL_LT r_doublearrow_expr
+    | r_bool_ineq BOOL_LT r_add_expr
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_LT);
         res->setLeft($1);
         res->setRight($3);
         $$ = res;
     }
-    | r_bool_ineq BOOL_LTE r_doublearrow_expr
+    | r_bool_ineq BOOL_LTE r_add_expr
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_LTE);
         res->setLeft($1);
         res->setRight($3);
         $$ = res;
     }
-    | r_bool_ineq BOOL_GT r_doublearrow_expr
+    | r_bool_ineq BOOL_GT r_add_expr
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_GT);
         res->setLeft($1);
         res->setRight($3);
         $$ = res;
     }
-    | r_bool_ineq BOOL_GTE r_doublearrow_expr
+    | r_bool_ineq BOOL_GTE r_add_expr
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_GTE);
         res->setLeft($1);
@@ -400,11 +412,29 @@ r_bool_ineq
         $$ = res;
     }
     ;
-
-r_bool_and
+r_bool_eq
     : r_bool_ineq
     { $$ = $1; }
-    | r_bool_and BOOL_AND r_bool_ineq
+    | r_bool_eq BOOL_EQ r_bool_ineq
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_EQ);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
+    | r_bool_eq BOOL_INEQ r_bool_ineq
+    {
+        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_INEQ);
+        res->setLeft($1);
+        res->setRight($3);
+        $$ = res;
+    }
+    ;
+
+r_bool_and
+    : r_bool_eq
+    { $$ = $1; }
+    | r_bool_and BOOL_AND r_bool_eq
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_AND);
         res->setLeft($1);
@@ -425,35 +455,17 @@ r_bool_or
     }
     ;
 
-r_bool_eq
+r_doublearrow_expr
     : r_bool_or
     { $$ = $1; }
-    | r_bool_eq BOOL_EQ r_bool_or
-    {
-        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_EQ);
-        res->setLeft($1);
-        res->setRight($3);
-        $$ = res;
-    }
-    | r_bool_eq BOOL_INEQ r_bool_or
-    {
-        AST_Node* res = new AST_Node(AST_Node::AST_Type::BOOL_INEQ);
-        res->setLeft($1);
-        res->setRight($3);
-        $$ = res;
-    }
-    ;
-r_doublearrow_expr
-    : r_bool_eq
-    { $$ = $1; }
-    | r_doublearrow_expr DOUBLE_ARR_LEFT r_add_expr
+    | r_doublearrow_expr DOUBLE_ARR_LEFT r_bool_or
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::DOUBLEARROW_LEFT);
         res->setLeft($1);
         res->setRight($3);
         $$ = res;
     }
-    | r_doublearrow_expr DOUBLE_ARR_RIGHT r_add_expr
+    | r_doublearrow_expr DOUBLE_ARR_RIGHT r_bool_or
     {
         AST_Node* res = new AST_Node(AST_Node::AST_Type::DOUBLEARROW_RIGHT);
         res->setLeft($1);

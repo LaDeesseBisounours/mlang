@@ -35,8 +35,10 @@ class AST_Tester {
                 BOOST_CHECK( _expected_ast == nullptr );
                 BOOST_CHECK( _ph.get_generated_ast() == nullptr );
             } else {
-                std::cout << "exoected" << std::endl << *_expected_ast<<std::endl;
-                std::cout << "generated" << std::endl << *_ph.get_generated_ast() << std::endl;
+                std::cout << "exoected" << std::endl
+                          << *_expected_ast << std::endl;
+                std::cout << "generated" << std::endl
+                          << *_ph.get_generated_ast() << std::endl;
                 BOOST_CHECK( *_ph.get_generated_ast() == *_expected_ast );
             }
         }
@@ -713,8 +715,8 @@ BOOST_AUTO_TEST_CASE( BOOL_LT ) {
                                               { "0" } ) ),
                             nullptr ),
                         nullptr ) ),
-                new AST_Node( AST_Node::AST_Type::IDENTIFIER,
-                              { "i" } ) ), nullptr );
+                new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ) ),
+            nullptr );
 
 
         AST_Tester( "8 - -foo::bar[0]->lol lt i;",
@@ -769,16 +771,15 @@ BOOST_AUTO_TEST_CASE( BOOL_LTE ) {
                                               { "0" } ) ),
                             nullptr ),
                         nullptr ) ),
-                new AST_Node( AST_Node::AST_Type::IDENTIFIER,
-                              { "i" } ) ), nullptr );
+                new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ) ),
+            nullptr );
 
 
         AST_Tester( "8 - -foo::bar[0]->lol lte i;",
                     expected_ast )( AST_Tester::EXPECTED::SUCCESS );
     }
 }
- BOOST_AUTO_TEST_CASE(BOOL_GT)
-{
+BOOST_AUTO_TEST_CASE( BOOL_GT ) {
     {
         AST_Node* expected_ast = new AST_Node(
             AST_Node::AST_Type::STATEMENT_LIST, {},
@@ -826,16 +827,15 @@ BOOST_AUTO_TEST_CASE( BOOL_LTE ) {
                                               { "0" } ) ),
                             nullptr ),
                         nullptr ) ),
-                new AST_Node( AST_Node::AST_Type::IDENTIFIER,
-                              { "i" } ) ), nullptr );
+                new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ) ),
+            nullptr );
 
 
         AST_Tester( "8 - -foo::bar[0]->lol gt i;",
                     expected_ast )( AST_Tester::EXPECTED::SUCCESS );
     }
 }
- BOOST_AUTO_TEST_CASE(BOOL_GTE)
-{
+BOOST_AUTO_TEST_CASE( BOOL_GTE ) {
     {
         AST_Node* expected_ast = new AST_Node(
             AST_Node::AST_Type::STATEMENT_LIST, {},
@@ -883,8 +883,8 @@ BOOST_AUTO_TEST_CASE( BOOL_LTE ) {
                                               { "0" } ) ),
                             nullptr ),
                         nullptr ) ),
-                new AST_Node( AST_Node::AST_Type::IDENTIFIER,
-                              { "i" } ) ), nullptr );
+                new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ) ),
+            nullptr );
 
 
         AST_Tester( "8 - -foo::bar[0]->lol gte i;",
@@ -892,30 +892,87 @@ BOOST_AUTO_TEST_CASE( BOOL_LTE ) {
     }
 }
 
-BOOST_AUTO_TEST_CASE(BOOL_AND)
+BOOST_AUTO_TEST_CASE(BOOL_EQ)
 {
+}
+BOOST_AUTO_TEST_CASE( BOOL_AND ) {
     {
-        AST_Node* expected_ast = new AST_Node(AST_Node::AST_Type::STATEMENT_LIST, {}, 
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
 
-                new AST_Node(AST_Node::AST_Type::BOOL_AND, {}, 
-                    new AST_Node(AST_Node::AST_Type::BOOL_GTE, {},
-                        new AST_Node(AST_Node::AST_Type::IDENTIFIER, {"i"}),
-                        new AST_Node(AST_Node::AST_Type::NUMBER, {"0"})),
-                    new AST_Node(AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {}, 
-                        new AST_Node(AST_Node::AST_Type::IDENTIFIER, {"is_success"})
-                        ,nullptr)),
-                nullptr);
+            new AST_Node(
+                AST_Node::AST_Type::BOOL_AND, {},
+                new AST_Node(
+                    AST_Node::AST_Type::BOOL_GTE, {},
+                    new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ),
+                    new AST_Node( AST_Node::AST_Type::NUMBER, { "0" } ) ),
+                new AST_Node( AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {},
+                              new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                            { "is_success" } ),
+                              nullptr ) ),
+            nullptr );
         AST_Tester( "i gte 0 and is_success() ;",
+                    expected_ast )( AST_Tester::EXPECTED::SUCCESS );
+    }
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+
+            new AST_Node(
+                AST_Node::AST_Type::BOOL_AND, {},
+                new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ),
+                new AST_Node(
+                    AST_Node::AST_Type::BOOL_GTE, {},
+                    new AST_Node( AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {},
+                                  new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                                { "is_success" } ),
+                                  nullptr ),
+                    new AST_Node( AST_Node::AST_Type::NUMBER, { "0" } ) ) ),
+            nullptr );
+        AST_Tester( "i  and is_success() gte 0;",
                     expected_ast )( AST_Tester::EXPECTED::SUCCESS );
     }
 }
 
-// BOOST_AUTO_TEST_CASE(BOOL_OR)
-//{}
-// BOOST_AUTO_TEST_CASE(BOOL_INEQ)
-//{}
-// BOOST_AUTO_TEST_CASE(BOOL_EQ)
-//{}
+BOOST_AUTO_TEST_CASE(BOOL_OR)
+{
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+
+            new AST_Node(
+                AST_Node::AST_Type::BOOL_OR, {},
+                new AST_Node(
+                    AST_Node::AST_Type::BOOL_GTE, {},
+                    new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ),
+                    new AST_Node( AST_Node::AST_Type::NUMBER, { "0" } ) ),
+                new AST_Node( AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {},
+                              new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                            { "is_success" } ),
+                              nullptr ) ),
+            nullptr );
+        AST_Tester( "i gte 0 or is_success() ;",
+                    expected_ast )( AST_Tester::EXPECTED::SUCCESS );
+    }
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+
+            new AST_Node(
+                AST_Node::AST_Type::BOOL_OR, {},
+                new AST_Node(
+                    AST_Node::AST_Type::BOOL_AND, {},
+                    new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ),
+                    new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "j" } ) ),
+                new AST_Node( AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {},
+                              new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                            { "is_success" } ),
+                              nullptr ) ),
+            nullptr );
+        AST_Tester( "i and j or is_success() ;",
+                    expected_ast )( AST_Tester::EXPECTED::SUCCESS );
+    }
+}
 // BOOST_AUTO_TEST_CASE(DOUBLEARROW_LEFT)
 //{}
 // BOOST_AUTO_TEST_CASE(DOUBLEARROW_RIGHT)
