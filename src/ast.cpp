@@ -150,6 +150,12 @@ ostream& operator<<( ostream& os, const AST_Node& node ) {
 ostream& operator<<( ostream& os, const AST_Node::AST_Type& t ) {
     string s;
     switch ( t ) {
+    case AST_Node::AST_Type::TRUE:
+        s = "TRUE";
+        break;
+    case AST_Node::AST_Type::FALSE:
+        s = "FALSE";
+        break;
     case AST_Node::AST_Type::NUMBER:
         s = "NUMBER";
         break;

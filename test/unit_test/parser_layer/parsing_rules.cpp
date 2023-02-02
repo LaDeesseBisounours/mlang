@@ -35,11 +35,15 @@ class AST_Tester {
                 BOOST_CHECK( _expected_ast == nullptr );
                 BOOST_CHECK( _ph.get_generated_ast() == nullptr );
             } else {
-                std::cout << "exoected" << std::endl
-                          << *_expected_ast << std::endl;
-                std::cout << "generated" << std::endl
-                          << *_ph.get_generated_ast() << std::endl;
-                BOOST_CHECK( *_ph.get_generated_ast() == *_expected_ast );
+                bool result = *_ph.get_generated_ast() == *_expected_ast;
+                if ( not result ) {
+                    std::cout << "expected" << std::endl
+                              << *_expected_ast << std::endl;
+                    std::cout << "generated" << std::endl
+                              << *_ph.get_generated_ast() << std::endl;
+                }
+
+                BOOST_CHECK( result );
             }
         }
     }
@@ -1089,19 +1093,17 @@ BOOST_AUTO_TEST_CASE( BOOL_OR ) {
                 new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ),
                 new AST_Node(
                     AST_Node::AST_Type::BOOL_AND, {},
-                    new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "j" } ) ,
+                    new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "j" } ),
                     new AST_Node( AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {},
                                   new AST_Node( AST_Node::AST_Type::IDENTIFIER,
                                                 { "is_success" } ),
-                                  nullptr )
-                    ) ),
+                                  nullptr ) ) ),
             nullptr );
         AST_Tester( "i or j  and is_success() ;",
                     expected_ast )( AST_Tester::EXPECTED::SUCCESS );
     }
 }
-BOOST_AUTO_TEST_CASE(DOUBLEARROW_LEFT)
-{
+BOOST_AUTO_TEST_CASE( DOUBLEARROW_LEFT ) {
     {
         AST_Node* expected_ast = new AST_Node(
             AST_Node::AST_Type::STATEMENT_LIST, {},
@@ -1110,12 +1112,11 @@ BOOST_AUTO_TEST_CASE(DOUBLEARROW_LEFT)
                 new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ),
                 new AST_Node(
                     AST_Node::AST_Type::BOOL_OR, {},
-                    new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "j" } ) ,
+                    new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "j" } ),
                     new AST_Node( AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {},
                                   new AST_Node( AST_Node::AST_Type::IDENTIFIER,
                                                 { "is_success" } ),
-                                  nullptr )
-                    ) ),
+                                  nullptr ) ) ),
             nullptr );
         AST_Tester( "i << j  or is_success() ;",
                     expected_ast )( AST_Tester::EXPECTED::SUCCESS );
@@ -1139,8 +1140,7 @@ BOOST_AUTO_TEST_CASE(DOUBLEARROW_LEFT)
                     expected_ast )( AST_Tester::EXPECTED::SUCCESS );
     }
 }
-BOOST_AUTO_TEST_CASE(DOUBLEARROW_RIGHT)
-{
+BOOST_AUTO_TEST_CASE( DOUBLEARROW_RIGHT ) {
     {
         AST_Node* expected_ast = new AST_Node(
             AST_Node::AST_Type::STATEMENT_LIST, {},
@@ -1149,12 +1149,11 @@ BOOST_AUTO_TEST_CASE(DOUBLEARROW_RIGHT)
                 new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "i" } ),
                 new AST_Node(
                     AST_Node::AST_Type::BOOL_OR, {},
-                    new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "j" } ) ,
+                    new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "j" } ),
                     new AST_Node( AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {},
                                   new AST_Node( AST_Node::AST_Type::IDENTIFIER,
                                                 { "is_success" } ),
-                                  nullptr )
-                    ) ),
+                                  nullptr ) ) ),
             nullptr );
         AST_Tester( "i >> j  or is_success() ;",
                     expected_ast )( AST_Tester::EXPECTED::SUCCESS );
@@ -1178,19 +1177,133 @@ BOOST_AUTO_TEST_CASE(DOUBLEARROW_RIGHT)
                     expected_ast )( AST_Tester::EXPECTED::SUCCESS );
     }
 }
-// BOOST_AUTO_TEST_CASE(ASSIGNMENT)
-//{}
-// BOOST_AUTO_TEST_CASE(EXPR)
-//{}
-// BOOST_AUTO_TEST_CASE(LET_STATEMENT)
-//{}
+BOOST_AUTO_TEST_CASE( ASSIGNMENT ) {
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(
+                AST_Node::AST_Type::ASSIGNMENT, {},
+                new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "var" } ),
+                new AST_Node(
+                    AST_Node::AST_Type::ADD, {},
+                    new AST_Node( AST_Node::AST_Type::NUMBER, { "354" } ),
+                    new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                  { "another_val" } ) ) ),
+            nullptr );
+        AST_Tester( "var = 354 + another_val;",
+                    expected_ast )( AST_Tester::EXPECTED::SUCCESS );
+    }
+}
+BOOST_AUTO_TEST_CASE( LET_STATEMENT ) {
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(
+                AST_Node::AST_Type::LET_STATEMENT, { "var" },
+                new AST_Node(
+                    AST_Node::AST_Type::TYPE_ARRAY, { "5" },
+                    new AST_Node( AST_Node::AST_Type::TYPE, {},
+                                  new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                                { "Integer" } ),
+                                  nullptr ),
+                    nullptr ),
+                nullptr ),
+            nullptr );
+        AST_Tester( "let Integer[5] var;",
+                    expected_ast )( AST_Tester::EXPECTED::SUCCESS );
+    }
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(
+                AST_Node::AST_Type::LET_STATEMENT, { "var" },
+                new AST_Node(
+                    AST_Node::AST_Type::TYPE_POINTER, {},
+                    new AST_Node( AST_Node::AST_Type::TYPE, {},
+                                  new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                                { "Integer" } ),
+                                  nullptr ),
+                    nullptr ),
+                new AST_Node( AST_Node::AST_Type::POSTFIX_FUNCTION_CALL, {},
+                              new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                            { "std", "get_int" } ),
+                              nullptr ) ),
+            nullptr );
+        AST_Tester( "let Integer* var = std::get_int();",
+                    expected_ast )( AST_Tester::EXPECTED::SUCCESS );
+    }
+    // {
+    //     AST_Node* expected_ast = new AST_Node(
+    //         AST_Node::AST_Type::LET_STATEMENT, {},
+    //         new AST_Node(
+    //             AST_Node::AST_Type::ASSIGNMENT, {},
+    //             new AST_Node( AST_Node::AST_Type::IDENTIFIER, { "var" } ),
+    //             new AST_Node(
+    //                 AST_Node::AST_Type::ADD, {},
+    //                 new AST_Node( AST_Node::AST_Type::NUMBER, { "354" } ),
+    //                 new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+    //                               { "another_val" } ) ) ),
+    //         nullptr );
+    //     AST_Tester( "let Integer var = 354 + another_val;",
+    //                 expected_ast )( AST_Tester::EXPECTED::SUCCESS );
+    // }
+}
+BOOST_AUTO_TEST_CASE( FUNCTION_STATEMENT ) {
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(
+                AST_Node::AST_Type::FUNCTION_STATEMENT, {},
+                new AST_Node(
+                    AST_Node::AST_Type::FUNCTION_PROTOTYPE, {},
+                    new AST_Node(
+                        AST_Node::AST_Type::FUNCTION_PROTOTYPE, {},
+                        new AST_Node(
+                            AST_Node::AST_Type::TYPE, {},
+                            new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                          { "_" } ),
+                            nullptr ),
+                        new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                      { "add_and_mult" } ) ),
+                    new AST_Node(
+                        AST_Node::AST_Type::PARAMETER_LIST, { "a" },
+                        new AST_Node(
+                            AST_Node::AST_Type::PARAMETER_LIST, { "m" },
+                            new AST_Node(
+                                AST_Node::AST_Type::PARAMETER_LIST,
+                                { "result" },
+                                new AST_Node(
+                                    AST_Node::AST_Type::TYPE_POINTER, {},
+                                    new AST_Node(
+                                        AST_Node::AST_Type::TYPE, {},
+                                        new AST_Node(
+                                            AST_Node::AST_Type::IDENTIFIER,
+                                            { "Integer" } ),
+                                        nullptr ),
+                                    nullptr ),
+                                nullptr ),
+                            new AST_Node(
+                                AST_Node::AST_Type::TYPE, {},
+                                new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                              { "Integer" } ),
+                                nullptr ) ),
+                        new AST_Node(
+                            AST_Node::AST_Type::TYPE, {},
+                            new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                          { "Integer" } ),
+                            nullptr ) ) ),
+                nullptr ),
+            nullptr );
+        AST_Tester(
+            "def _ add_and_mult(Integer* result, Integer m, Integer a);",
+            expected_ast )( AST_Tester::EXPECTED::SUCCESS );
+    }
+}
 // BOOST_AUTO_TEST_CASE(PARAMETER_LIST)
 //{}
 // BOOSTAUTO_TEST_CASE(EXPR_LIST)
 //{}
 // BOOST_AUTO_TEST_CASE(FUNCTION_PROTOTYPE)
-//{}
-// BOOST_AUTO_TEST_CASE(FUNCTION_STATEMENT)
 //{}
 // BOOST_AUTO_TEST_CASE(SINGLE_RANGE)
 //{}
