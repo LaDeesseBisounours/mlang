@@ -1,31 +1,3 @@
-/*
- * The MIT License (MIT)
- * 
- * Copyright (c) 2014 Krzysztof Narkiewicz <krzysztof.narkiewicz@ezaquarii.com>
- * 
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- * 
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- * 
- */
-
 %skeleton "lalr1.cc" /* -*- C++ -*- */
 %require "3.0"
 %defines
@@ -51,11 +23,6 @@
     }
 }
 
-// Bison calls yylex() function that must be provided by us to suck tokens
-// from the scanner. This block will be placed at the beginning of IMPLEMENTATION file (cpp).
-// We define this function here (function! not method).
-// This function is called only inside Bison, so we make it static to limit symbol visibility for the linker
-// to avoid potential linking conflicts.
 %code top
 {
     #include <iostream>
@@ -68,10 +35,6 @@
     static ParserLayer::Parser::symbol_type yylex(ParserLayer::Scanner &scanner, ParserLayer::ParserHandler &) {
         return scanner.get_next_token();
     }
-    
-    // you can accomplish the same thing by inlining the code using preprocessor
-    // x and y are same as in above static function
-    // #define yylex(x, y) scanner.get_next_token()
     
     using namespace ParserLayer;
 }
@@ -86,15 +49,6 @@
 
 %define api.token.prefix {TOKEN_}
 
-//%token END 0 "end of file"
-//%token <std::string> STRING  "string";
-//%token <uint64_t> INT_NUMBER "number";
-//%token <double> FLOAT_NUMBER
-//%token LEFTPAR "leftpar";
-//%token RIGHTPAR "rightpar";
-//%token SEMICOLON "semicolon";
-//%token COMMA "comma";
-
 %token END 0 "end of file"
 %token <std::string> NAME_ID  "string";
 %token <std::string> NUMBER "number"; //string and we parse it later
@@ -106,19 +60,20 @@
 %token CURLY_BRACKETS_OPEN CURLY_BRACKETS_CLOSE
 %token SINGLE_APOSTROPHE DOUBLE_APOSTROPHE
 
-%token COLON SEMICOLON //: ;
+%token COLON SEMICOLON 
 %token DOT ARROW
 %token COMMA
 %token INCREMENT DECREMENT
 
 %token BOOL_NOT
 %token ASSIGN_MOVE ASSIGN_COPY ASSIGN_DEREF ASSIGN_REF
+%token ABS
 
 //key words
 %token CLASS STRUCT FUNCTION LET ALIAS AS
 
 //binary ops
-%token PLUS MINUS ABS DIVISION MOD EQUAL
+%token PLUS MINUS DIVISION MOD EQUAL
 %token DOUBLE_ARR_LEFT DOUBLE_ARR_RIGHT
 
 //bool bin ops
@@ -782,15 +737,6 @@ r_parameter_list
         $$ = res;
     }
     ;
-
-//=============================================================================
-//=============================================================================
-//=============================================================================
-//=============================================================================
-//=============================================================================
-
-
-
 
 %%
 

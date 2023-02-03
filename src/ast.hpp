@@ -10,8 +10,7 @@ using namespace std;
 namespace ParserLayer {
 
 /**
- * AST node. If you can call it AST at all...
- * It keeps function name and a list of arguments.
+ * AST class to get the result of the parser
  */
 class AST_Node {
   public:

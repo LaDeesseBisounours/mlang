@@ -1248,7 +1248,7 @@ BOOST_AUTO_TEST_CASE( LET_STATEMENT ) {
     //                 expected_ast )( AST_Tester::EXPECTED::SUCCESS );
     // }
 }
-BOOST_AUTO_TEST_CASE( FUNCTION_STATEMENT ) {
+BOOST_AUTO_TEST_CASE( FUNCTION_PROTOTYPE ) {
     {
         AST_Node* expected_ast = new AST_Node(
             AST_Node::AST_Type::STATEMENT_LIST, {},
@@ -1299,11 +1299,95 @@ BOOST_AUTO_TEST_CASE( FUNCTION_STATEMENT ) {
             expected_ast )( AST_Tester::EXPECTED::SUCCESS );
     }
 }
+
+BOOST_AUTO_TEST_CASE( FUNCTION_STATEMENT ) {
+    {
+        AST_Node* expected_ast = new AST_Node(
+            AST_Node::AST_Type::STATEMENT_LIST, {},
+            new AST_Node(
+                AST_Node::AST_Type::FUNCTION_STATEMENT, {},
+                new AST_Node(
+                    AST_Node::AST_Type::FUNCTION_PROTOTYPE, {},
+                    new AST_Node(
+                        AST_Node::AST_Type::FUNCTION_PROTOTYPE, {},
+                        new AST_Node(
+                            AST_Node::AST_Type::TYPE, {},
+                            new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                          { "_" } ),
+                            nullptr ),
+                        new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                      { "add_and_mult" } ) ),
+                    new AST_Node(
+                        AST_Node::AST_Type::PARAMETER_LIST, { "a" },
+                        new AST_Node(
+                            AST_Node::AST_Type::PARAMETER_LIST, { "m" },
+                            new AST_Node(
+                                AST_Node::AST_Type::PARAMETER_LIST,
+                                { "result" },
+                                new AST_Node(
+                                    AST_Node::AST_Type::TYPE_POINTER, {},
+                                    new AST_Node(
+                                        AST_Node::AST_Type::TYPE, {},
+                                        new AST_Node(
+                                            AST_Node::AST_Type::IDENTIFIER,
+                                            { "Integer" } ),
+                                        nullptr ),
+                                    nullptr ),
+                                nullptr ),
+                            new AST_Node(
+                                AST_Node::AST_Type::TYPE, {},
+                                new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                              { "Integer" } ),
+                                nullptr ) ),
+                        new AST_Node(
+                            AST_Node::AST_Type::TYPE, {},
+                            new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                          { "Integer" } ),
+                            nullptr ) ) ),
+                new AST_Node(
+                    AST_Node::AST_Type::STATEMENT_LIST, {},
+                    new AST_Node(
+                        AST_Node::AST_Type::ASSIGNMENT, {},
+                        new AST_Node(
+                            AST_Node::AST_Type::UNARY_REF_ASSIGN_DEREF, {},
+                            new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                          { "result" } ),
+                            nullptr ),
+                        new AST_Node(
+                            AST_Node::AST_Type::MULT, {},
+                            new AST_Node(
+                                AST_Node::AST_Type::UNARY_REF_ASSIGN_DEREF, {},
+                                new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                              { "result" } ),
+                                nullptr ),
+                            new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                          { "m" } ) ) ),
+                    new AST_Node(
+                        AST_Node::AST_Type::ASSIGNMENT, {},
+                        new AST_Node(
+                            AST_Node::AST_Type::UNARY_REF_ASSIGN_DEREF, {},
+                            new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                          { "result" } ),
+                            nullptr ),
+                        new AST_Node(
+                            AST_Node::AST_Type::ADD, {},
+                            new AST_Node(
+                                AST_Node::AST_Type::UNARY_REF_ASSIGN_DEREF, {},
+                                new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                              { "result" } ),
+                                nullptr ),
+                            new AST_Node( AST_Node::AST_Type::IDENTIFIER,
+                                          { "a" } ) ) ) ) ),
+            nullptr );
+        AST_Tester( "def _ add_and_mult(Integer* result, Integer m, Integer a) "
+                    "{ *result = *result * m; *result = *result + a; }",
+                    expected_ast )( AST_Tester::EXPECTED::SUCCESS );
+    }
+}
+
 // BOOST_AUTO_TEST_CASE(PARAMETER_LIST)
 //{}
 // BOOSTAUTO_TEST_CASE(EXPR_LIST)
-//{}
-// BOOST_AUTO_TEST_CASE(FUNCTION_PROTOTYPE)
 //{}
 // BOOST_AUTO_TEST_CASE(SINGLE_RANGE)
 //{}
